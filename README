@@ -1,0 +1,198 @@
+FlickrDownload
+
+Introduction
+------------
+
+I have become a huge fan of Flickr over the last year and a half. I've really
+enjoyed looking at other people's photos and uploading photos of my own. I
+currently have about 3,500 photos on my account and I have spent a lot of time
+organizing and labeling those photos.
+
+I have been concerned about having all of my photos locked up in Flickr for
+some time now. There are a lot of great people in the Flickr community but I
+don't like having all of my photos locked up in a proprietary system. I don't
+mind having my photos on there but I also like to have the exact same data
+in an open format on my hard drive. I used to keep a separate copy of my
+photos on my hard drive but that copy was not organized as nicely as the
+photos on my Flickr account.
+
+There have also been times when I wanted to make CDs of a few sets to give
+out. Flickr does not have an interface that allows you to download all of your
+photos at once. There are services that allow you to order DVDs of your photos
+but I have not been happy with those DVDs. I also don't like the idea of having
+to order DVDs to get a backup of my photos.
+
+I've found a few programs that would backup your Flickr account but some
+of them would truncate the title and not show the description. I wanted a
+program that would download all of my sets and store the information about
+each photo in a XML file. I could not find a program that would do that so I
+wrote my own.
+
+FlickrDownload is written in C#. It uses the FlickrNet API library
+(http://www.codeplex.com/Wiki/View.aspx?ProjectName=FlickrNet) to communicate
+with Flickr. I developed it under Debian GNU/Linux and I use Mono to compile
+and run the application. It should also run under Windows with no problems. I
+have not tested this application under Windows.
+
+I also included some XSLT stylesheets that can be used to generate some HTML
+files. More information about this is shown later in the document.
+
+
+How it works
+------------
+
+The program has a command line interface that does not have many bells and
+whistles. You can specify your account name and the directory where the photos
+should be stored. It will create subdirectories for each of your sets in the
+destination directory. The program will check to see if the photos already
+exist and if so, it will not download the photos again. This allows the
+program to be ran in an incremental mode. I always run the program after I 
+upload new photos to Flickr.
+
+Here is an example of some of the files are directories that are created by
+the application:
+
+72157594267391686
+72157603126591058
+72157602581284555
+sets.xml
+
+The long numbers are the IDs of your sets. I did not use the title of the set as
+the directory name so that the set names can be easily renamed on Flickr. This
+allows the incremental backup feature to work correctly.
+
+The sets.xml file contains some basic information about each set. Here is an
+example:
+
+<sets>
+  <set>
+    <title>Some of my favorite photos</title>
+    <directory>72157594267391686</directory>
+    <thumbnailFile>72157594267391686/208567793_thumb.jpg</thumbnailFile>
+  </set>
+  <set>
+    <title>A Secret Cave</title>
+    <directory>72157603126591058</directory>
+    <thumbnailFile>72157603126591058/1971392366_thumb.jpg</thumbnailFile>
+  </set>
+  <set>
+    <title>2007 Bridge Day Rappel</title>
+    <directory>72157602581284555</directory>
+    <thumbnailFile>72157602581284555/1672742729_thumb.jpg</thumbnailFile>
+  </set>
+</sets>
+
+Now, change into one of the directories. You will see files like this:
+
+1672724019_med.jpg
+1672724019_orig.jpg
+1672724019_thumb.jpg
+1970501857_med.jpg
+1970501857_orig.jpg
+1970501857_thumb.jpg
+photos.xml
+
+The photo ID from Flickr is used as the filename so that the incremental backup
+feature works correctly. The thumbnail, medium and original files are downloaded
+from the server. A photos.xml file is created the has some information about
+the photos. Here is an example:
+
+<set>
+  <title>Some of my favorite photos</title>
+  <description/>
+  <photo>
+    <id>1672724019</id>
+    <title>Mary and Brian on the catwalk</title>
+    <description/>
+    <dateTaken>10/20/2007 10:15:13</dateTaken>
+    <privacy>
+      <public/>
+    </privacy>
+    <originalFile>1672724019_orig.jpg</originalFile>
+    <mediumFile>1672724019_med.jpg</mediumFile>
+    <thumbnailFile>1672724019_thumb.jpg</thumbnailFile>
+  </photo>
+  <photo>
+    <id>1970501857</id>
+    <title>Formations</title>
+    <description/>
+    <dateTaken>11/10/2007 18:02:36</dateTaken>
+    <privacy>
+      <public/>
+    </privacy>
+    <originalFile>1970501857_orig.jpg</originalFile>
+    <mediumFile>1970501857_med.jpg</mediumFile>
+    <thumbnailFile>1970501857_thumb.jpg</thumbnailFile>
+  </photo>
+</set>
+
+Since all of that information is stored in XML, a XSLT stylesheet can be used
+to generate HTML for an offline copy of your Flickr account. I included some
+XSLT stylesheets with this program.
+
+
+Instructions
+------------
+
+Note: This instructions were written for *NIX based systems.
+
+Requirements:
+  Mono - http://www.mono-project.com/
+  FlickrNet - http://www.codeplex.com/Wiki/View.aspx?ProjectName=FlickrNet
+
+Change into the FlickrDownload directory and type nant. If the compilation is 
+successful, it should create the binary bin/FlickrDownload.exe.
+
+Once you have that, you are ready to start downloading your photos. First, pick
+a location where you want to store your photos. Let's say that it is in
+~/photos. Run the following commands. (The lines with # are comments.)
+
+# Create the base directory
+mkdir ~/photos
+# Create a directory for the XSLT stylesheets.
+mkdir ~/photos/src
+# Copy the XSLT stylesheets from the FlickrDownload package
+cp /path/to/FlickrDownload/xslt* ~/photos/src
+# Download the photos
+mono /path/to/FlickrDownload.exe "Your User ID goes here" ~/photos
+
+You should see messages like "Downloading file XXX...". You can run this program
+again at a future time and it will not download any photos that have already
+been downloaded. The various photos.xml files and a single sets.xml file will
+also be generated.
+
+You are now ready to generate the HTML files. You may first want to edit
+the ~/photos/src/settings.xsl file that contains several settings for
+the generated HTML files. The main one that you may want to change is the
+footer_message variable. Once you are ready, run the following two commands:
+
+cd ~/photos/src
+make
+
+You can open ~/photos/index.html in any web browser to see an offline copy
+of your Flickr account. 
+
+
+TODO
+----
+
+This program is fairly primitive but it solves the problem that I had. I am
+releasing this because I am sure there are other people out there who want the
+same thing.
+
+My free time is fairly limited these days so I most likely won't have much time
+to add additional features to this program. I am open to accepting patches.
+Here are a few things that could be done to the program:
+
+* Use the .NET XML APIs to generate the XML. Do the XML -> HTML transformation
+  using XSLT inside the C# code.
+* Download more available information from Flickr.
+* Make the program easier to use.
+* Right now, the program will only check for the file's existence to see if
+  it should be downloaded from the server. If the file exists, but is 
+  corrupted on the server, then a newer version will not be downloaded from
+  Flickr.
+
+Brian Masney
+11/18/2007
+http://www.flickr.com/photos/masneyb/sets/

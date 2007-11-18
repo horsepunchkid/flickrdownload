@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<project name="FlickrDownload" default="build">
+  <property name="build.debug" value="true" />
+  <property name="build.dir" value="bin" />
+
+  <target name="build">
+    <csc target="exe" output="${build.dir}/FlickrDownload.exe">
+      <sources>
+        <include name="src/FlickrDownload.cs" />
+      </sources>
+      <references>
+        <include name="lib/FlickrNet.dll"/>
+      </references>
+    </csc>
+  </target>
+
+  <target name="clean">
+    <delete file="${build.dir}/FlickrDownload.exe" failonerror="false"/>
+  </target>	
+</project>
+
