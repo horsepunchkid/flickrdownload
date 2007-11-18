@@ -1,3 +1,5 @@
+using System.Configuration;
+
 namespace org.gftp
 {
 
@@ -23,23 +25,50 @@ static class FlickrDownload
         System.Console.WriteLine("Note: You may have to enclose your username in quotes (\") if it has spaces.");
       }
 
+    static void WriteAuthToken(string authToken)
+      {
+        Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None); 
+        config.AppSettings.Settings.Add ("flickrAuthToken", authToken);
+        config.Save();
+      }
+
     static FlickrNet.Flickr initFlickrSession()
       {
         FlickrNet.Flickr flickr = new FlickrNet.Flickr ("16c1a6a31f28e670500d02f6b13935b1", "0fa4d39da5eab415");
 
-        flickr.AuthToken = "FIXME";
-        /*
-        string Frob = flickr.AuthGetFrob();
-        string url = flickr.AuthCalcUrl(Frob, AuthLevel.Read);
-        System.Console.WriteLine(url);
+        string authToken = System.Configuration.ConfigurationManager.AppSettings["flickrAuthToken"];
+        while (authToken == null || authToken.Length == 0)
+          {
+            string Frob = flickr.AuthGetFrob();
+            string url = flickr.AuthCalcUrl(Frob, FlickrNet.AuthLevel.Read);
+
+            System.Console.WriteLine ("You must authenticate this application with Flickr. Please pull up the following");
+            System.Console.WriteLine ("URL in your web browser:");
+            System.Console.WriteLine ("");
+            System.Console.WriteLine("\t" + url);
+            System.Console.WriteLine ("");
+            System.Console.WriteLine ("Press enter once you have authenticated the application with Flickr.");
         
-        System.Console.ReadLine();
-        
-        Auth auth = flickr.AuthGetToken(Frob);
-        string token = auth.Token;
-        
-        System.Console.WriteLine("Token is " + token);
-        */
+            System.Console.ReadLine();
+
+            try
+              {
+                FlickrNet.Auth auth = flickr.AuthGetToken(Frob);
+                if (auth != null) 
+                  {
+                    authToken = auth.Token;
+                    WriteAuthToken(authToken);
+                  }
+              }
+            catch (FlickrNet.FlickrApiException e)
+              {
+                System.Console.WriteLine ("");
+                System.Console.WriteLine("Error receiving the authentication token: " + e);
+                System.Console.WriteLine ("");
+              }
+          }
+       
+        flickr.AuthToken = authToken;
 
         return flickr;
       }

@@ -10,6 +10,7 @@
       </sources>
       <references>
         <include name="lib/FlickrNet.dll"/>
+        <include name="System.Configuration.dll"/>
       </references>
     </csc>
   </target>
