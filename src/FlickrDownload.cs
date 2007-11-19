@@ -116,8 +116,7 @@ static class FlickrDownload
 
         xsltFile = System.IO.Path.Combine (xsltBasePath, xsltFile);
 
-        System.Console.WriteLine ("Performing XSLT transformation:");
-        System.Console.WriteLine ("\tCreating " + outputFile + " based on " + xmlFile + " using " + xsltFile);
+        System.Console.WriteLine ("Performing XSLT transformation on " + xmlFile + " using " + xsltFile + ". " + outputFile + " will be created.");
 
         try
           {
@@ -264,6 +263,8 @@ static class FlickrDownload
           outputPath = argv[1];
         else
           outputPath = ".";
+
+        System.IO.Directory.CreateDirectory (outputPath);
 
         xsltBasePath = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly().Location), "..");
 
