@@ -1,3 +1,21 @@
+/*****************************************************************************/
+/*  FlickrDownload                                                           */
+/*  Copyright (C) 2007 Brian Masney <masneyb@gftp.org>                       */
+/*                                                                           */
+/*  This program is free software; you can redistribute it and/or modify     */
+/*  it under the terms of the GNU General Public License as published by     */
+/*  the Free Software Foundation; either version 3 of the License, or        */
+/*  (at your option) any later version.                                      */
+/*                                                                           */
+/*  This program is distributed in the hope that it will be useful,          */
+/*  but WITHOUT ANY WARRANTY; without even the implied warranty of           */
+/*  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the            */
+/*  GNU General Public License for more details.                             */
+/*                                                                           */
+/*  You should have received a copy of the GNU General Public License        */
+/*  along with this program. If not, see <http://www.gnu.org/licenses/>.     */
+/*****************************************************************************/
+
 using System.Configuration;
 
 namespace org.gftp
@@ -5,6 +23,8 @@ namespace org.gftp
 
 static class FlickrDownload
   {
+    static string xsltBasePath;
+
     static void WriteProgramBanner()
       {
         System.Console.WriteLine("FlickrDownload 0.1 Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.");
@@ -93,6 +113,8 @@ static class FlickrDownload
             System.Console.WriteLine ("The setting " + xsltSetting + " is not set in the application config file.");
             System.Environment.Exit (1);
           }
+
+        xsltFile = System.IO.Path.Combine (xsltBasePath, xsltFile);
 
         System.Console.WriteLine ("Performing XSLT transformation:");
         System.Console.WriteLine ("\tCreating " + outputFile + " based on " + xmlFile + " using " + xsltFile);
@@ -222,7 +244,7 @@ static class FlickrDownload
             System.Environment.Exit (1);
           }
 
-        System.IO.File.Copy (sourceFile, destFile);
+        System.IO.File.Copy (System.IO.Path.Combine (xsltBasePath, sourceFile), destFile);
       }
 
     static int Main (string[] argv)
@@ -241,10 +263,11 @@ static class FlickrDownload
         else
           outputPath = ".";
 
-
-        System.Console.WriteLine ("Downloading photo set information for user '" + argv[0] + "'");
+        xsltBasePath = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly().Location), "..");
 
         FlickrNet.Flickr flickr = initFlickrSession();
+
+        System.Console.WriteLine ("Downloading photo set information for user '" + argv[0] + "'");
         FlickrNet.Photosets sets;
         try
           {
