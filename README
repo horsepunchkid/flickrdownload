@@ -184,9 +184,6 @@ My free time is fairly limited these days so I most likely won't have much time
 to add additional features to this program. I am open to accepting patches.
 Here are a few things that could be done to the program:
 
-* Use the .NET XML APIs to generate the XML. Do the XML -> HTML transformation
-  using XSLT inside the C# code.
-* Download more available information from Flickr.
 * Make the program easier to use.
 * Right now, the program will only check for the file's existence to see if
   it should be downloaded from the server. If the file exists, but is 

@@ -73,15 +73,64 @@ static class FlickrDownload
         return flickr;
       }
 
+    static void addXmlTextNode (System.Xml.XmlDocument xmlDoc, System.Xml.XmlElement parent, string name, string value)
+      {
+        System.Xml.XmlElement element = xmlDoc.CreateElement (name);
+        parent.AppendChild (element);
+
+        if (value != "")
+          {
+            System.Xml.XmlText text = xmlDoc.CreateTextNode (value);
+            element.AppendChild (text);
+          }
+      }
+
+    static void PerformXsltTransformation(string xsltSetting, string xmlFile, string outputFile)
+      {
+        string xsltFile = System.Configuration.ConfigurationManager.AppSettings[xsltSetting];
+        if (xsltFile == null || xsltFile == "")
+          {
+            System.Console.WriteLine ("The setting " + xsltSetting + " is not set in the application config file.");
+            System.Environment.Exit (1);
+          }
+
+        System.Console.WriteLine ("Performing XSLT transformation:");
+        System.Console.WriteLine ("\tCreating " + outputFile + " based on " + xmlFile + " using " + xsltFile);
+
+        try
+          {
+            System.Xml.XPath.XPathDocument xPathDoc = new System.Xml.XPath.XPathDocument (xmlFile);
+
+            System.Xml.Xsl.XslTransform xsltTrans = new System.Xml.Xsl.XslTransform ();
+            xsltTrans.Load (xsltFile);
+            
+            System.Xml.XmlTextWriter outputXHtml = new System.Xml.XmlTextWriter (outputFile, null);
+
+            xsltTrans.Transform (xPathDoc, null, outputXHtml);        
+
+            outputXHtml.Close() ;
+          }
+        catch (System.Exception e)
+          {
+            System.Console.WriteLine ("Error performing the XSLT transformation: " + e.Message);
+          }
+      }
+
     static void DownloadPhotoSet(FlickrNet.Flickr flickr, FlickrNet.Photoset set, string outputPath)
       {
         string setDirectory = System.IO.Path.Combine (outputPath, set.PhotosetId);
         System.IO.Directory.CreateDirectory (setDirectory);
 
-        System.IO.StreamWriter output = new System.IO.StreamWriter (System.IO.Path.Combine (setDirectory, "photos.xml"), false);
+        System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument ();
+        System.Xml.XmlNode xmlNode = xmlDoc.CreateNode (System.Xml.XmlNodeType.XmlDeclaration, "", "");
+        xmlDoc.AppendChild (xmlNode);
 
-        output.WriteLine ("<set><title>" + set.Title + "</title><description>" + set.Description + "</description>");
-            
+        System.Xml.XmlElement setTopLevelXmlNode = xmlDoc.CreateElement ("set");
+        xmlDoc.AppendChild (setTopLevelXmlNode);
+
+        addXmlTextNode (xmlDoc, setTopLevelXmlNode, "title", set.Title);
+        addXmlTextNode (xmlDoc, setTopLevelXmlNode, "description", set.Description);
+
         foreach (FlickrNet.Photo photo in flickr.PhotosetsGetPhotos (set.PhotosetId).PhotoCollection)
           {
             FlickrNet.PhotoInfo pi = flickr.PhotosGetInfo (photo.PhotoId);
@@ -98,43 +147,46 @@ static class FlickrDownload
             string origFile = photo.PhotoId + "_orig.jpg";
             DownloadPicture (flickr, origUrl, System.IO.Path.Combine (setDirectory, origFile));
 
-            output.WriteLine ("<photo>");
-            output.WriteLine ("<id>" + photo.PhotoId + "</id>");
-            output.WriteLine ("<title>" + photo.Title + "</title>");
-            output.WriteLine ("<description>" + pi.Description + "</description>");
-            output.WriteLine ("<dateTaken>" + photo.DateTaken + "</dateTaken>");
-            output.WriteLine ("<tags>" + photo.CleanTags + "</tags>");
+            System.Xml.XmlElement photoXmlNode = xmlDoc.CreateElement ("photo");
+            setTopLevelXmlNode.AppendChild (photoXmlNode);
+
+            addXmlTextNode (xmlDoc, photoXmlNode, "id", photo.PhotoId);
+            addXmlTextNode (xmlDoc, photoXmlNode, "title", photo.Title);
+            addXmlTextNode (xmlDoc, photoXmlNode, "description", pi.Description);
+            addXmlTextNode (xmlDoc, photoXmlNode, "dateTaken", photo.DateTaken.ToString());
+            addXmlTextNode (xmlDoc, photoXmlNode, "tags", photo.CleanTags);
             
             try
               {
                 FlickrNet.PhotoPermissions privacy = flickr.PhotosGetPerms (photo.PhotoId);
-                output.WriteLine ("<privacy>");
                 
                 if (privacy.IsPublic)
-                  output.WriteLine ("<public/>");
+                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "public");
+                else if (privacy.IsFamily && privacy.IsFriend)
+                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "friend/family");
+                else if (privacy.IsFamily)
+                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "family");
+                else if (privacy.IsFriend)
+                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "friend");
                 else
-                  {
-                    if (privacy.IsFamily)
-                      output.WriteLine ("<family/>");
-                    if (privacy.IsFriend)
-                      output.WriteLine ("<friend/>");
-                  }
-                  
-                output.WriteLine ("</privacy>");
+                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "private");
               }
             catch (FlickrNet.FlickrApiException)
               {
               }
 
-            output.WriteLine ("<originalFile>" + origFile + "</originalFile>");
-            output.WriteLine ("<mediumFile>" + medFile + "</mediumFile>");
-            output.WriteLine ("<thumbnailFile>" + thumbFile + "</thumbnailFile>");
-            
-            output.WriteLine ("</photo>");
+            addXmlTextNode (xmlDoc, photoXmlNode, "originalFile", origFile);
+            addXmlTextNode (xmlDoc, photoXmlNode, "mediumFile", medFile);
+            addXmlTextNode (xmlDoc, photoXmlNode, "thumbnailFile", thumbFile);
           }
 
-        output.WriteLine ("</set>");
-        output.Close ();
+        string xmlFile = System.IO.Path.Combine (setDirectory, "photos.xml");
+        xmlDoc.Save (xmlFile);
+
+        /* FIXME - This current fails because the document() function in XSLT
+           is not supported. */
+        string htmlFile = System.IO.Path.Combine (setDirectory, "index.html");
+        PerformXsltTransformation("setXsltFile", xmlFile, htmlFile);
       }
 
     static void DownloadPicture (FlickrNet.Flickr flickr, string url, string fileName)
@@ -192,19 +244,32 @@ static class FlickrDownload
             return 1;
           }
           
-        System.IO.StreamWriter setOutput = new System.IO.StreamWriter (System.IO.Path.Combine (outputPath, "sets.xml"), false);
-        setOutput.WriteLine ("<sets>");
-        
+        System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument ();
+        System.Xml.XmlNode xmlNode = xmlDoc.CreateNode (System.Xml.XmlNodeType.XmlDeclaration, "", "");
+        xmlDoc.AppendChild (xmlNode);
+
+        System.Xml.XmlElement setTopLevelXmlNode = xmlDoc.CreateElement ("sets");
+        xmlDoc.AppendChild (setTopLevelXmlNode);
+
         foreach (FlickrNet.Photoset set in sets.PhotosetCollection)
           {
+            System.Xml.XmlElement setXmlNode = xmlDoc.CreateElement ("set");
+            setTopLevelXmlNode.AppendChild (setXmlNode);
+            
+            addXmlTextNode (xmlDoc, setXmlNode, "title", set.Title);
+            addXmlTextNode (xmlDoc, setXmlNode, "directory", set.PhotosetId);
+
             string primaryPhoto = set.PrimaryPhotoId + "_thumb.jpg";
-            setOutput.WriteLine ("<set><title>" + set.Title + "</title><directory>" + set.PhotosetId + "</directory><thumbnailFile>" + set.PhotosetId + "/" + primaryPhoto + "</thumbnailFile></set>");
+            addXmlTextNode (xmlDoc, setXmlNode, "thumbnailFile", set.PhotosetId + "/" + primaryPhoto);
 
             DownloadPhotoSet (flickr, set, outputPath);
           }
           
-        setOutput.WriteLine ("</sets>");
-        setOutput.Close ();
+        string xmlFile = System.IO.Path.Combine (outputPath, "sets.xml");
+        xmlDoc.Save (xmlFile);
+
+        string htmlFile = System.IO.Path.Combine (outputPath, "index.html");
+        PerformXsltTransformation("allSetsXsltFile", xmlFile, htmlFile);
 
         return 0;
       }

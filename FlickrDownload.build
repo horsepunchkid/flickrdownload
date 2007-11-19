@@ -11,6 +11,7 @@
       <references>
         <include name="lib/FlickrNet.dll"/>
         <include name="System.Configuration.dll"/>
+        <include name="System.Xml.dll"/>
       </references>
     </csc>
   </target>
