@@ -153,25 +153,9 @@
             <div class="date_taken">Date Taken: <xsl:value-of select="photo[$pos + 0]/dateTaken"/></div>
             <div class="download_links">Download Image: <a href="{photo[$pos + 0]/originalFile}">Large</a>, <a href="{photo[$pos + 0]/mediumFile}">Medium</a> or <a href="{photo[$pos + 0]/thumbnailFile}">Small</a></div>
 
-            <div class="privacy">
-              <xsl:choose>
-                <xsl:when test="photo[$pos + 0]/privacy/public">
-                  <xsl:text>This photo is public.</xsl:text>
-                </xsl:when>
-                <xsl:when test="photo[$pos + 0]/privacy/friend and photo[$pos + 0]/privacy/family">
-                  <xsl:text>Only friends and family can see this.</xsl:text>
-                </xsl:when>
-                <xsl:when test="photo[$pos + 0]/privacy/friend">
-                  <xsl:text>Only friends can see this.</xsl:text>
-                </xsl:when>
-                <xsl:when test="photo[$pos + 0]/privacy/family">
-                  <xsl:text>Only family can see this.</xsl:text>
-                </xsl:when>
-                <xsl:otherwise>
-                  <xsl:text>This photo is private.</xsl:text>
-                </xsl:otherwise>
-              </xsl:choose>
-            </div>
+            <xsl:if test="photo[$pos + 0]/privacy">
+              <div class="privacy">Privacy: <xsl:value-of select="photo[$pos + 0]/privacy"/></div>
+            </xsl:if>
           </td>
         </table>
         <div class="copyright"><xsl:copy-of select="$footer_message"/></div>
