@@ -23,7 +23,10 @@ namespace org.gftp
 
 static class FlickrDownload
   {
+    static FlickrNet.Flickr flickr;
     static string xsltBasePath;
+    static string outputPath;
+    static string footerMessage;
 
     static void WriteProgramBanner()
       {
@@ -40,9 +43,7 @@ static class FlickrDownload
 
     static void usage()
       {
-        System.Console.WriteLine("FlickrDownload <username> [output directory]");
-        System.Console.WriteLine("");
-        System.Console.WriteLine("Note: You may have to enclose your username in quotes (\") if it has spaces.");
+        System.Console.WriteLine("FlickrDownload <username> [output directory] [HTML footer message]");
       }
 
     static void WriteAuthToken(string authToken)
@@ -52,9 +53,34 @@ static class FlickrDownload
         config.Save();
       }
 
-    static FlickrNet.Flickr initFlickrSession()
+    static void initialize(string[] argv)
       {
-        FlickrNet.Flickr flickr = new FlickrNet.Flickr ("16c1a6a31f28e670500d02f6b13935b1", "0fa4d39da5eab415");
+        WriteProgramBanner();
+
+        if (argv.Length < 1 || argv.Length > 3)
+          {
+            usage();
+            System.Environment.Exit (1);
+          }
+
+        if (argv.Length >= 2)
+          outputPath = argv[1];
+        else
+          outputPath = ".";
+
+        if (argv.Length >= 3)
+          footerMessage = argv[2];
+       
+        System.IO.Directory.CreateDirectory (outputPath);
+
+        xsltBasePath = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly().Location), "..");
+
+        initFlickrSession();
+      }
+
+    static void initFlickrSession()
+      {
+        flickr = new FlickrNet.Flickr ("16c1a6a31f28e670500d02f6b13935b1", "0fa4d39da5eab415");
 
         string authToken = System.Configuration.ConfigurationManager.AppSettings["flickrAuthToken"];
         while (authToken == null || authToken.Length == 0)
@@ -89,8 +115,6 @@ static class FlickrDownload
           }
        
         flickr.AuthToken = authToken;
-
-        return flickr;
       }
 
     static void addXmlTextNode (System.Xml.XmlDocument xmlDoc, System.Xml.XmlElement parent, string name, string value)
@@ -137,7 +161,7 @@ static class FlickrDownload
           }
       }
 
-    static void DownloadPhotoSet(FlickrNet.Flickr flickr, FlickrNet.Photoset set, string outputPath)
+    static void DownloadPhotoSet(FlickrNet.Photoset set)
       {
         string setDirectory = System.IO.Path.Combine (outputPath, set.PhotosetId);
         System.IO.Directory.CreateDirectory (setDirectory);
@@ -152,21 +176,24 @@ static class FlickrDownload
         addXmlTextNode (xmlDoc, setTopLevelXmlNode, "title", set.Title);
         addXmlTextNode (xmlDoc, setTopLevelXmlNode, "description", set.Description);
 
+        if (footerMessage != null)
+          addXmlTextNode (xmlDoc, setTopLevelXmlNode, "footerMessage", footerMessage);
+
         foreach (FlickrNet.Photo photo in flickr.PhotosetsGetPhotos (set.PhotosetId).PhotoCollection)
           {
             FlickrNet.PhotoInfo pi = flickr.PhotosGetInfo (photo.PhotoId);
             
             string thumbUrl = photo.ThumbnailUrl;
             string thumbFile = photo.PhotoId + "_thumb.jpg";
-            DownloadPicture (flickr, thumbUrl, System.IO.Path.Combine (setDirectory, thumbFile));
+            DownloadPicture (thumbUrl, System.IO.Path.Combine (setDirectory, thumbFile));
             
             string medUrl = photo.MediumUrl;
             string medFile = photo.PhotoId + "_med.jpg";
-            DownloadPicture (flickr, medUrl, System.IO.Path.Combine (setDirectory, medFile));
+            DownloadPicture (medUrl, System.IO.Path.Combine (setDirectory, medFile));
             
             string origUrl = photo.OriginalUrl;
             string origFile = photo.PhotoId + "_orig.jpg";
-            DownloadPicture (flickr, origUrl, System.IO.Path.Combine (setDirectory, origFile));
+            DownloadPicture (origUrl, System.IO.Path.Combine (setDirectory, origFile));
 
             System.Xml.XmlElement photoXmlNode = xmlDoc.CreateElement ("photo");
             setTopLevelXmlNode.AppendChild (photoXmlNode);
@@ -204,13 +231,11 @@ static class FlickrDownload
         string xmlFile = System.IO.Path.Combine (setDirectory, "photos.xml");
         xmlDoc.Save (xmlFile);
 
-        /* FIXME - This current fails because the document() function in XSLT
-           is not supported. */
         string htmlFile = System.IO.Path.Combine (setDirectory, "index.html");
         PerformXsltTransformation("setXsltFile", xmlFile, htmlFile);
       }
 
-    static void DownloadPicture (FlickrNet.Flickr flickr, string url, string fileName)
+    static void DownloadPicture (string url, string fileName)
       {
         if (System.IO.File.Exists (fileName))
           {
@@ -250,25 +275,7 @@ static class FlickrDownload
 
     static int Main (string[] argv)
       {
-        WriteProgramBanner();
-
-        if (argv.Length < 1 || argv.Length > 2)
-          {
-            usage();
-            return 1;
-          }
-
-        string outputPath;
-        if (argv.Length == 2)
-          outputPath = argv[1];
-        else
-          outputPath = ".";
-
-        System.IO.Directory.CreateDirectory (outputPath);
-
-        xsltBasePath = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly().Location), "..");
-
-        FlickrNet.Flickr flickr = initFlickrSession();
+        initialize (argv);
 
         System.Console.WriteLine ("Downloading photo set information for user '" + argv[0] + "'");
         FlickrNet.Photosets sets;
@@ -289,6 +296,9 @@ static class FlickrDownload
         System.Xml.XmlElement setTopLevelXmlNode = xmlDoc.CreateElement ("sets");
         xmlDoc.AppendChild (setTopLevelXmlNode);
 
+        if (footerMessage != null)
+          addXmlTextNode (xmlDoc, setTopLevelXmlNode, "footerMessage", footerMessage);
+
         foreach (FlickrNet.Photoset set in sets.PhotosetCollection)
           {
             System.Xml.XmlElement setXmlNode = xmlDoc.CreateElement ("set");
@@ -300,7 +310,7 @@ static class FlickrDownload
             string primaryPhoto = set.PrimaryPhotoId + "_thumb.jpg";
             addXmlTextNode (xmlDoc, setXmlNode, "thumbnailFile", set.PhotosetId + "/" + primaryPhoto);
 
-            DownloadPhotoSet (flickr, set, outputPath);
+            DownloadPhotoSet (set);
           }
           
         string xmlFile = System.IO.Path.Combine (outputPath, "sets.xml");

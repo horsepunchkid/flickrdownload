@@ -4,7 +4,7 @@
 <xsl:output method="html"/>
 
 <!--
-  FlickrDownload 0.9 Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.
+  FlickrDownload - Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.
   If you have any questions, comments, or suggestions about this program, please
   feel free to email them to me. You can always find out the latest news about
   FlickrDownload from my website at http://www.gftp.org/FlickrDownload/
@@ -51,7 +51,9 @@
 
       <div class="back_to_main"><a href="../index.html">Back to sets</a></div>
 
-      <div class="copyright"><xsl:copy-of select="$footer_message"/></div>
+      <xsl:if test="footerMessage">
+        <div class="copyright"><xsl:copy-of select="footerMessage"/></div>
+      </xsl:if>
     </body>
   </html>
 </xsl:template>
@@ -158,7 +160,10 @@
             </xsl:if>
           </td>
         </table>
-        <div class="copyright"><xsl:copy-of select="$footer_message"/></div>
+
+        <xsl:if test="footerMessage">
+          <div class="copyright"><xsl:copy-of select="footerMessage"/></div>
+        </xsl:if>
       </body>
     </html>
   </exsl:document>

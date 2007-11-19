@@ -2,14 +2,23 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 <xsl:output method="xml"/>
 
-<!-- Brian Masney <masneyb@gftp.org> -->
+<!--
+  FlickrDownload - Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.
+  If you have any questions, comments, or suggestions about this program, please
+  feel free to email them to me. You can always find out the latest news about
+  FlickrDownload from my website at http://www.gftp.org/FlickrDownload/
+
+  FlickrDownload comes with ABSOLUTELY NO WARRANTY; for details, see the COPYING
+  file. This is free software, and you are welcome to redistribute it under
+  certain conditions; for details, see the COPYING file.
+
+  Brian Masney <masneyb@gftp.org>
+-->
 
 <xsl:variable name="sets_per_row" select="5"/>
 <xsl:variable name="photos_per_row" select="6"/>
 
 <xsl:variable name="thumbnail_height" select="75"/>
 <xsl:variable name="thumbnail_width" select="75"/>
-
-<xsl:variable name="footer_message">Copyright (C) 2007 Brian Masney &lt;<a href="mailto:masneyb@gftp.org">masneyb@gftp.org</a>&gt;</xsl:variable>
 
 </xsl:stylesheet>

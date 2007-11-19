@@ -3,7 +3,18 @@
 <xsl:include href="settings.xsl"/>
 <xsl:output method="xml"/>
 
-<!-- Brian Masney <masneyb@gftp.org> -->
+<!--
+  FlickrDownload - Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.
+  If you have any questions, comments, or suggestions about this program, please
+  feel free to email them to me. You can always find out the latest news about
+  FlickrDownload from my website at http://www.gftp.org/FlickrDownload/
+
+  FlickrDownload comes with ABSOLUTELY NO WARRANTY; for details, see the COPYING
+  file. This is free software, and you are welcome to redistribute it under
+  certain conditions; for details, see the COPYING file.
+
+  Brian Masney <masneyb@gftp.org>
+-->
 
 <xsl:template match="/sets">
   <html>
@@ -39,7 +50,9 @@
       </table>
       </center>
 
-      <div class="copyright"><xsl:copy-of select="$footer_message"/></div>
+      <xsl:if test="footerMessage">
+        <div class="copyright"><xsl:copy-of select="footerMessage"/></div>
+      </xsl:if>
     </body>
   </html>
 </xsl:template>
