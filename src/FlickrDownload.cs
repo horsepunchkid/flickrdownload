@@ -244,7 +244,9 @@ static class FlickrDownload
             System.Environment.Exit (1);
           }
 
-        System.IO.File.Copy (System.IO.Path.Combine (xsltBasePath, sourceFile), destFile);
+        sourceFile = System.IO.Path.Combine (xsltBasePath, sourceFile);
+        System.Console.WriteLine ("Copying " + sourceFile + " to " + destFile);
+        System.IO.File.Copy (sourceFile, destFile);
       }
 
     static int Main (string[] argv)
