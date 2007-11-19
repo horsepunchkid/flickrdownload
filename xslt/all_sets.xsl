@@ -39,7 +39,7 @@
       </table>
       </center>
 
-      <div class="copyright"><xsl:copy-of select="$copyright"/></div>
+      <div class="copyright"><xsl:copy-of select="$footer_message"/></div>
     </body>
   </html>
 </xsl:template>
