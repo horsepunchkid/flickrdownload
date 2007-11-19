@@ -181,22 +181,33 @@ static class FlickrDownload
 
         foreach (FlickrNet.Photo photo in flickr.PhotosetsGetPhotos (set.PhotosetId).PhotoCollection)
           {
+            System.Xml.XmlElement photoXmlNode = xmlDoc.CreateElement ("photo");
+            setTopLevelXmlNode.AppendChild (photoXmlNode);
+
             FlickrNet.PhotoInfo pi = flickr.PhotosGetInfo (photo.PhotoId);
             
             string thumbUrl = photo.ThumbnailUrl;
             string thumbFile = photo.PhotoId + "_thumb.jpg";
             DownloadPicture (thumbUrl, System.IO.Path.Combine (setDirectory, thumbFile));
+            addXmlTextNode (xmlDoc, photoXmlNode, "thumbnailFile", thumbFile);
             
             string medUrl = photo.MediumUrl;
             string medFile = photo.PhotoId + "_med.jpg";
             DownloadPicture (medUrl, System.IO.Path.Combine (setDirectory, medFile));
+            addXmlTextNode (xmlDoc, photoXmlNode, "mediumFile", medFile);
             
-            string origUrl = photo.OriginalUrl;
-            string origFile = photo.PhotoId + "_orig.jpg";
-            DownloadPicture (origUrl, System.IO.Path.Combine (setDirectory, origFile));
-
-            System.Xml.XmlElement photoXmlNode = xmlDoc.CreateElement ("photo");
-            setTopLevelXmlNode.AppendChild (photoXmlNode);
+            // The original image is only available to Pro users...
+            try
+              {
+                string origUrl = photo.OriginalUrl;
+                string origFile = photo.PhotoId + "_orig.jpg";
+                DownloadPicture (origUrl, System.IO.Path.Combine (setDirectory, origFile));
+                addXmlTextNode (xmlDoc, photoXmlNode, "originalFile", origFile);
+              }
+            catch (System.Exception e)
+              {
+                System.Console.WriteLine("Error retrieving the original photo: " + e.Message);
+              }
 
             addXmlTextNode (xmlDoc, photoXmlNode, "id", photo.PhotoId);
             addXmlTextNode (xmlDoc, photoXmlNode, "title", photo.Title);
@@ -222,10 +233,6 @@ static class FlickrDownload
             catch (FlickrNet.FlickrApiException)
               {
               }
-
-            addXmlTextNode (xmlDoc, photoXmlNode, "originalFile", origFile);
-            addXmlTextNode (xmlDoc, photoXmlNode, "mediumFile", medFile);
-            addXmlTextNode (xmlDoc, photoXmlNode, "thumbnailFile", thumbFile);
           }
 
         string xmlFile = System.IO.Path.Combine (setDirectory, "photos.xml");
