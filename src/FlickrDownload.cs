@@ -104,7 +104,7 @@ static class FlickrDownload
             System.Xml.Xsl.XslTransform xsltTrans = new System.Xml.Xsl.XslTransform ();
             xsltTrans.Load (xsltFile);
             
-            System.Xml.XmlTextWriter outputXHtml = new System.Xml.XmlTextWriter (outputFile, null);
+            MultiOutput.MultiXmlTextWriter outputXHtml = new MultiOutput.MultiXmlTextWriter (outputFile, null);
 
             xsltTrans.Transform (xPathDoc, null, outputXHtml);        
 

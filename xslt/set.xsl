@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:exsl="http://exslt.org/common" version="1.0">
 <xsl:include href="settings.xsl"/>
-<xsl:output method="xml"/>
+<xsl:output method="html"/>
 
 <!--
   FlickrDownload 0.9 Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.
@@ -109,7 +109,7 @@
   <xsl:param name="pos"/>
   <xsl:variable name="filename" select="concat(photo[$pos + 0]/id,'.html')" />
 
-  <xsl:document href="{$filename}" method="html">
+  <exsl:document href="{$filename}" method="html">
     <html>
       <head>
         <link href="../src/photos.css" rel="stylesheet" type="text/css"/>
@@ -177,7 +177,7 @@
         <div class="copyright"><xsl:copy-of select="$footer_message"/></div>
       </body>
     </html>
-  </xsl:document>
+  </exsl:document>
 
   <td align="center" class="photo">
     <a title="{photo[$pos + 0]/title}">
