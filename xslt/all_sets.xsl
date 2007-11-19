@@ -8,7 +8,7 @@
 <xsl:template match="/sets">
   <html>
     <head>
-      <link href="src/photos.css" rel="stylesheet" type="text/css"/>
+      <link href="photos.css" rel="stylesheet" type="text/css"/>
       <xsl:choose>
         <xsl:when test="title">
           <title><xsl:value-of select="title"/></title>

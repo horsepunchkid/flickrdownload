@@ -213,6 +213,18 @@ static class FlickrDownload
         output.Close ();
       }
 
+    static void CopyPhotosDotCSS (string destFile)
+      {
+        string sourceFile = System.Configuration.ConfigurationManager.AppSettings["photosCssFile"];
+        if (sourceFile == null || sourceFile == "")
+          {
+            System.Console.WriteLine ("The setting photosCssFile is not set in the application config file.");
+            System.Environment.Exit (1);
+          }
+
+        System.IO.File.Copy (sourceFile, destFile);
+      }
+
     static int Main (string[] argv)
       {
         WriteProgramBanner();
@@ -270,6 +282,8 @@ static class FlickrDownload
 
         string htmlFile = System.IO.Path.Combine (outputPath, "index.html");
         PerformXsltTransformation("allSetsXsltFile", xmlFile, htmlFile);
+
+        CopyPhotosDotCSS (System.IO.Path.Combine (outputPath, "photos.css"));
 
         return 0;
       }

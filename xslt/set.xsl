@@ -19,7 +19,7 @@
 <xsl:template match="/set">
   <html>
     <head>
-      <link href="../src/photos.css" rel="stylesheet" type="text/css"/>
+      <link href="../photos.css" rel="stylesheet" type="text/css"/>
       <title><xsl:value-of select="title"/></title>
     </head>
     <body>
@@ -112,7 +112,7 @@
   <exsl:document href="{$filename}" method="html">
     <html>
       <head>
-        <link href="../src/photos.css" rel="stylesheet" type="text/css"/>
+        <link href="../photos.css" rel="stylesheet" type="text/css"/>
         <title><xsl:value-of select="photo[$pos + 0]/title"/></title>
       </head>
       <body>
