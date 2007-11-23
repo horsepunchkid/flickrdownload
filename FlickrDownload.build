@@ -16,6 +16,8 @@
         <include name="System.Xml.dll"/>
       </references>
     </csc>
+
+    <copy file="lib/FlickrNet.dll" todir="${build.dir}" />
   </target>
 
   <target name="clean">
