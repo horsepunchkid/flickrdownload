@@ -88,12 +88,26 @@ static class FlickrDownload
             string Frob = flickr.AuthGetFrob();
             string url = flickr.AuthCalcUrl(Frob, FlickrNet.AuthLevel.Read);
 
-            System.Console.WriteLine ("You must authenticate this application with Flickr. Please pull up the following");
-            System.Console.WriteLine ("URL in your web browser:");
+            System.Console.WriteLine ("Is it OK to open the following URL in your web browser?");
             System.Console.WriteLine ("");
             System.Console.WriteLine("\t" + url);
             System.Console.WriteLine ("");
-            System.Console.WriteLine ("Press enter once you have authenticated the application with Flickr.");
+
+            string response;
+            do
+              {
+                System.Console.WriteLine ("Please enter 'y' or 'n'.");
+                response = System.Console.ReadLine();
+                if (response.ToLower() == "n" || response.ToLower() == "no")
+                  System.Environment.Exit (1);
+              }
+            while (response.ToLower() != "y" && response.ToLower() != "yes");
+
+            System.Console.WriteLine ("");
+            System.Console.WriteLine ("Opening URL. Press enter once you have authenticated the application");
+            System.Console.WriteLine ("with Flickr inside your web browser.");
+
+            OpenLink (url);
         
             System.Console.ReadLine();
 
@@ -115,6 +129,44 @@ static class FlickrDownload
           }
        
         flickr.AuthToken = authToken;
+      }
+
+    // This code was derived from:
+    // http://www.mono-project.com/Howto_OpenBrowser
+    public static bool OpenLink(string address)
+      {
+        try
+          {
+            System.Diagnostics.Process proc;
+            int plat = (int) System.Environment.OSVersion.Platform;
+
+            if ((plat != 4) && (plat != 128))
+              {
+                // Use Microsoft's way of opening sites
+                proc = System.Diagnostics.Process.Start(address);
+              }
+            else
+              {
+                string cmdline = System.String.Format("firefox {0} || " +
+                      "mozilla-firefox {0} || konqueror {0} || " + 
+                      "gnome-open {0} || open {0}",
+                      address.Replace("&", "\\&"));
+
+                proc = System.Diagnostics.Process.Start (cmdline);
+              }
+
+            // Sleep some time to wait for the shell to return in case of error
+            System.Threading.Thread.Sleep(250);
+
+            // If the exit code is zero or the process is still running then
+            // appearently we have been successful.
+            return (!proc.HasExited || proc.ExitCode == 0);
+          }
+        catch (System.Exception)
+          {
+            // We don't want any surprises
+            return false;
+          }
       }
 
     static void addXmlTextNode (System.Xml.XmlDocument xmlDoc, System.Xml.XmlElement parent, string name, string value)
