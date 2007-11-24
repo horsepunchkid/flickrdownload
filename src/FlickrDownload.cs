@@ -39,20 +39,20 @@ static class FlickrDownload
 
     static void WriteProgramBanner()
       {
-        System.Console.WriteLine("FlickrDownload 0.1 Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.");
-        System.Console.WriteLine("If you have any questions, comments, or suggestions about this program, please");
-        System.Console.WriteLine("feel free to email them to me. You can always find out the latest news about");
-        System.Console.WriteLine("FlickrDownload from my website at http://www.gftp.org/FlickrDownload/");
-        System.Console.WriteLine("");
-        System.Console.WriteLine("FlickrDownload comes with ABSOLUTELY NO WARRANTY; for details, see the COPYING");
-        System.Console.WriteLine("file. This is free software, and you are welcome to redistribute it under");
-        System.Console.WriteLine("certain conditions; for details, see the COPYING file.");
-        System.Console.WriteLine("");
+        System.Console.Error.WriteLine("FlickrDownload 0.1 Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.");
+        System.Console.Error.WriteLine("If you have any questions, comments, or suggestions about this program, please");
+        System.Console.Error.WriteLine("feel free to email them to me. You can always find out the latest news about");
+        System.Console.Error.WriteLine("FlickrDownload from my website at http://www.gftp.org/FlickrDownload/");
+        System.Console.Error.WriteLine("");
+        System.Console.Error.WriteLine("FlickrDownload comes with ABSOLUTELY NO WARRANTY; for details, see the COPYING");
+        System.Console.Error.WriteLine("file. This is free software, and you are welcome to redistribute it under");
+        System.Console.Error.WriteLine("certain conditions; for details, see the COPYING file.");
+        System.Console.Error.WriteLine("");
       }
 
     static void usage()
       {
-        System.Console.WriteLine("FlickrDownload [--xslt-only] [--dont-download-photos] [--dont-download-photo-privacy] <output directory> [Flickr username] [HTML footer message]");
+        System.Console.Error.WriteLine("FlickrDownload [--xslt-only] [--dont-download-photos] [--dont-download-photo-privacy] <output directory> [Flickr username] [HTML footer message]");
         System.Environment.Exit (1);
       }
 
@@ -91,7 +91,15 @@ static class FlickrDownload
         if (argv.Length > curArgPos)
           usage ();
        
-        System.IO.Directory.CreateDirectory (outputPath);
+        try
+          {
+            System.IO.Directory.CreateDirectory (outputPath);
+          }
+        catch (System.Exception e)
+          {
+            System.Console.Error.WriteLine ("Error creating directory " + outputPath + ": " + e.Message);
+            System.Environment.Exit (1);
+          }
 
         toplevelXmlFile = System.IO.Path.Combine (outputPath, "sets.xml");
         toplevelHtmlFile = System.IO.Path.Combine (outputPath, "index.html");
@@ -130,7 +138,7 @@ static class FlickrDownload
         string xsltFile = System.Configuration.ConfigurationManager.AppSettings[xsltSetting];
         if (xsltFile == null || xsltFile == "")
           {
-            System.Console.WriteLine ("The setting " + xsltSetting + " is not set in the application config file.");
+            System.Console.Error.WriteLine ("The setting " + xsltSetting + " is not set in the application config file.");
             System.Environment.Exit (1);
           }
 
@@ -153,7 +161,7 @@ static class FlickrDownload
           }
         catch (System.Exception e)
           {
-            System.Console.WriteLine ("Error performing the XSLT transformation: " + e.Message);
+            System.Console.Error.WriteLine ("Error performing the XSLT transformation: " + e.Message);
           }
       }
 
@@ -162,13 +170,20 @@ static class FlickrDownload
         string sourceFile = System.Configuration.ConfigurationManager.AppSettings["photosCssFile"];
         if (sourceFile == null || sourceFile == "")
           {
-            System.Console.WriteLine ("The setting photosCssFile is not set in the application config file.");
+            System.Console.Error.WriteLine ("The setting photosCssFile is not set in the application config file.");
             System.Environment.Exit (1);
           }
 
-        sourceFile = System.IO.Path.Combine (xsltBasePath, sourceFile);
-        System.Console.WriteLine ("Copying " + sourceFile + " to " + toplevelPhotosCss);
-        System.IO.File.Copy (sourceFile, toplevelPhotosCss, true);
+        try
+          {
+            sourceFile = System.IO.Path.Combine (xsltBasePath, sourceFile);
+            System.IO.File.Copy (sourceFile, toplevelPhotosCss, true);
+            System.Console.WriteLine ("Copyied " + sourceFile + " to " + toplevelPhotosCss);
+          }
+        catch (System.Exception e)
+          {
+            System.Console.Error.WriteLine ("Error copying " + sourceFile + " to " + toplevelPhotosCss + ": " + e.Message);
+          }
       }
 
     static void lookupUserNameInTopLevelXmlFile ()
@@ -176,15 +191,23 @@ static class FlickrDownload
         if (flickrUsername != null)
           return;
 
-        System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument ();
-        xmlDoc.Load (toplevelXmlFile);
+        try
+          {
+            System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument ();
+            xmlDoc.Load (toplevelXmlFile);
 
-        System.Xml.XmlNodeList nameNodes = xmlDoc.GetElementsByTagName ("flickrUsername");
-        if (nameNodes.Count == 0 || nameNodes[0].ChildNodes.Count == 0 ||
-            nameNodes[0].ChildNodes[0].Value == null)
-          return;
+            System.Xml.XmlNodeList nameNodes = xmlDoc.GetElementsByTagName ("flickrUsername");
+            if (nameNodes.Count == 0 || nameNodes[0].ChildNodes.Count == 0 ||
+                nameNodes[0].ChildNodes[0].Value == null)
+              return;
 
-        flickrUsername = nameNodes[0].ChildNodes[0].Value;
+            flickrUsername = nameNodes[0].ChildNodes[0].Value;
+          }
+        catch (System.Exception e)
+          {
+            System.Console.Error.WriteLine ("Error looking up the flickrUsername tag in the file " + toplevelXmlFile + ": " + e.Message);
+            System.Environment.Exit (1);
+          }
       }
 
     static void performXsltOnlyMode ()
@@ -195,6 +218,8 @@ static class FlickrDownload
         foreach (System.Xml.XmlNode dirNode in xmlDoc.GetElementsByTagName ("directory"))
           {
             string photoSetId = dirNode.ChildNodes[0].Value;
+            if (photoSetId == null)
+              continue;
 
             string xmlFile = getSetPhotoSetXmlFile(photoSetId);
             string htmlFile = getSetPhotoSetHtmlFile(photoSetId);
@@ -209,9 +234,17 @@ static class FlickrDownload
 
     static void WriteAuthToken(string authToken)
       {
-        Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None); 
-        config.AppSettings.Settings.Add ("flickrAuthToken", authToken);
-        config.Save();
+        try
+          {
+            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None); 
+            config.AppSettings.Settings.Add ("flickrAuthToken", authToken);
+            config.Save();
+          }
+        catch (System.Exception e)
+          {
+            System.Console.Error.WriteLine ("Error writing the authentication token to the configuration file: " + e.Message);
+            System.Environment.Exit (1);
+          }
       }
 
     static void initFlickrSession()
@@ -219,13 +252,21 @@ static class FlickrDownload
         lookupUserNameInTopLevelXmlFile ();
         if (flickrUsername == null)
           {
-            System.Console.WriteLine ("Error: A Flickr username was not specified on the command line,");
-            System.Console.WriteLine ("nor could it be found in the XML file");
-            System.Console.WriteLine (toplevelXmlFile);
+            System.Console.Error.WriteLine ("Error: A Flickr username was not specified on the command line,");
+            System.Console.Error.WriteLine ("nor could it be found in the XML file");
+            System.Console.Error.WriteLine (toplevelXmlFile);
             System.Environment.Exit (1);
           }
 
-        flickr = new FlickrNet.Flickr ("16c1a6a31f28e670500d02f6b13935b1", "0fa4d39da5eab415");
+        try
+          {
+            flickr = new FlickrNet.Flickr ("16c1a6a31f28e670500d02f6b13935b1", "0fa4d39da5eab415");
+          }
+        catch (System.Exception e)
+          {
+            System.Console.Error.WriteLine ("Error initializing the Flickr session: " + e.Message);
+            System.Environment.Exit (1);
+          }
 
         string authToken = System.Configuration.ConfigurationManager.AppSettings["flickrAuthToken"];
         while (authToken == null || authToken.Length == 0)
@@ -267,9 +308,7 @@ static class FlickrDownload
               }
             catch (FlickrNet.FlickrApiException e)
               {
-                System.Console.WriteLine ("");
-                System.Console.WriteLine("Error receiving the authentication token: " + e);
-                System.Console.WriteLine ("");
+                System.Console.Error.WriteLine("\nError receiving the authentication token: " + e + "\n");
               }
           }
        
@@ -309,7 +348,6 @@ static class FlickrDownload
           }
         catch (System.Exception)
           {
-            // We don't want any surprises
             return false;
           }
       }
@@ -332,7 +370,18 @@ static class FlickrDownload
         if (footerMessage != null)
           addXmlTextNode (xmlDoc, setTopLevelXmlNode, "footerMessage", footerMessage);
 
-        foreach (FlickrNet.Photo photo in flickr.PhotosetsGetPhotos (set.PhotosetId).PhotoCollection)
+        FlickrNet.Photoset setPhotos;
+        try
+          {
+            setPhotos = flickr.PhotosetsGetPhotos (set.PhotosetId);
+          }
+        catch (System.Exception e)
+          {
+            System.Console.Error.WriteLine("Error retrieving the set ID " + set.PhotosetId + ": " + e.Message);
+            return;
+          }
+
+        foreach (FlickrNet.Photo photo in setPhotos.PhotoCollection)
           {
             System.Xml.XmlElement photoXmlNode = xmlDoc.CreateElement ("photo");
             setTopLevelXmlNode.AppendChild (photoXmlNode);
@@ -350,16 +399,20 @@ static class FlickrDownload
             addXmlTextNode (xmlDoc, photoXmlNode, "mediumFile", medFile);
             
             // The original image is only available to Pro users...
+            string origUrl = null;
             try
               {
-                string origUrl = photo.OriginalUrl;
+                origUrl = photo.OriginalUrl;
+              }
+            catch (System.Exception)
+              {
+              }
+
+            if (origUrl != null)
+              {
                 string origFile = photo.PhotoId + "_orig.jpg";
                 DownloadPicture (origUrl, System.IO.Path.Combine (setDirectory, origFile));
                 addXmlTextNode (xmlDoc, photoXmlNode, "originalFile", origFile);
-              }
-            catch (System.Exception e)
-              {
-                System.Console.WriteLine("Error retrieving the original photo: " + e.Message);
               }
 
             addXmlTextNode (xmlDoc, photoXmlNode, "id", photo.PhotoId);
@@ -412,19 +465,36 @@ static class FlickrDownload
           }
                   
         System.Console.WriteLine ("Downloading file " + fileName);
+
+        try
+          {
+            System.IO.Stream input = flickr.DownloadPicture (url);
+            System.IO.FileStream output = System.IO.File.Create (fileName);
                 
-        System.IO.Stream input = flickr.DownloadPicture (url);
-        System.IO.FileStream output = System.IO.File.Create (fileName);
-                
-        int numBytes;
-        const int size = 8192;
-        byte[] bytes = new byte[size];
+            int numBytes;
+            const int size = 8192;
+            byte[] bytes = new byte[size];
         
-        while((numBytes = input.Read (bytes, 0, size)) > 0)
-          output.Write(bytes, 0, numBytes);
+            while((numBytes = input.Read (bytes, 0, size)) > 0)
+              output.Write(bytes, 0, numBytes);
           
-        input.Close ();
-        output.Close ();
+            input.Close ();
+            output.Close ();
+          }
+        catch (System.Exception e)
+          {
+            System.Console.Error.WriteLine ("Error downloading " + url + " to " + fileName + ": " + e.Message);
+
+            try
+              {
+                System.IO.File.Delete (fileName);
+              }
+            catch (System.Exception)
+              {
+              }
+
+            System.Environment.Exit (1);
+          }
       }
 
 
@@ -438,6 +508,7 @@ static class FlickrDownload
             return 0;
           }
 
+
         initFlickrSession();
 
         System.Console.WriteLine ("Downloading photo set information for user '" + flickrUsername + "'");
@@ -447,9 +518,9 @@ static class FlickrDownload
           {
             sets = flickr.PhotosetsGetList (flickr.PeopleFindByUsername (flickrUsername).UserId);
           }
-        catch (FlickrNet.FlickrException ex)
+        catch (System.Exception ex)
           {
-            System.Console.WriteLine ("Error retrieving photos for user " + flickrUsername + ": " + ex.Message);
+            System.Console.Error.WriteLine ("Error retrieving photos for user " + flickrUsername + ": " + ex.Message);
             return 1;
           }
           
