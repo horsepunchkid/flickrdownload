@@ -26,6 +26,7 @@ static class FlickrDownload
     static FlickrNet.Flickr flickr = null;
     static bool xsltModeOnly = false;
     static bool downloadPhotos = true;
+    static bool downloadPhotoPrivacy = true;
 
     static string xsltBasePath;
     static string flickrUsername;
@@ -51,7 +52,7 @@ static class FlickrDownload
 
     static void usage()
       {
-        System.Console.WriteLine("FlickrDownload [--xslt-only] [--dont-download-photos] <output directory> [Flickr username] [HTML footer message]");
+        System.Console.WriteLine("FlickrDownload [--xslt-only] [--dont-download-photos] [--dont-download-photo-privacy] <output directory> [Flickr username] [HTML footer message]");
         System.Environment.Exit (1);
       }
 
@@ -69,6 +70,8 @@ static class FlickrDownload
               xsltModeOnly = true;
             else if (argv[curArgPos].Equals("--dont-download-photos"))
               downloadPhotos = false;
+            else if (argv[curArgPos].Equals("--dont-download-photo-privacy"))
+              downloadPhotoPrivacy = false;
             else
               usage ();
 
@@ -367,23 +370,26 @@ static class FlickrDownload
             addXmlTextNode (xmlDoc, photoXmlNode, "license", photo.License);
             addXmlTextNode (xmlDoc, photoXmlNode, "tags", photo.CleanTags);
             
-            try
+            if (downloadPhotoPrivacy)
               {
-                FlickrNet.PhotoPermissions privacy = flickr.PhotosGetPerms (photo.PhotoId);
-                
-                if (privacy.IsPublic)
-                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "public");
-                else if (privacy.IsFamily && privacy.IsFriend)
-                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "friend/family");
-                else if (privacy.IsFamily)
-                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "family");
-                else if (privacy.IsFriend)
-                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "friend");
-                else
-                  addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "private");
-              }
-            catch (FlickrNet.FlickrApiException)
-              {
+                try
+                  {
+                    FlickrNet.PhotoPermissions privacy = flickr.PhotosGetPerms (photo.PhotoId);
+                    
+                    if (privacy.IsPublic)
+                      addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "public");
+                    else if (privacy.IsFamily && privacy.IsFriend)
+                      addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "friend/family");
+                    else if (privacy.IsFamily)
+                      addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "family");
+                    else if (privacy.IsFriend)
+                      addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "friend");
+                    else
+                      addXmlTextNode (xmlDoc, photoXmlNode, "privacy", "private");
+                  }
+                catch (FlickrNet.FlickrApiException)
+                  {
+                  }
               }
           }
 
