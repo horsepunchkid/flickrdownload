@@ -39,7 +39,7 @@ static class FlickrDownload
 
     static void WriteProgramBanner()
       {
-        System.Console.Error.WriteLine("FlickrDownload 0.1 Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.");
+        System.Console.Error.WriteLine("FlickrDownload 0.2 Copyright(C) 2007 Brian Masney <masneyb@gftp.org>.");
         System.Console.Error.WriteLine("If you have any questions, comments, or suggestions about this program, please");
         System.Console.Error.WriteLine("feel free to email them to me. You can always find out the latest news about");
         System.Console.Error.WriteLine("FlickrDownload from my website at http://www.gftp.org/FlickrDownload/");
