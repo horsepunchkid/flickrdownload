@@ -23,10 +23,18 @@ namespace org.gftp
 
 static class FlickrDownload
   {
-    static FlickrNet.Flickr flickr;
+    static FlickrNet.Flickr flickr = null;
+    static bool xsltModeOnly = false;
+    static bool downloadPhotos = true;
+
     static string xsltBasePath;
+    static string flickrUsername;
     static string outputPath;
     static string footerMessage;
+
+    static string toplevelXmlFile;
+    static string toplevelHtmlFile;
+    static string toplevelPhotosCss;
 
     static void WriteProgramBanner()
       {
@@ -43,8 +51,158 @@ static class FlickrDownload
 
     static void usage()
       {
-        System.Console.WriteLine("FlickrDownload <username> [output directory] [HTML footer message]");
+        System.Console.WriteLine("FlickrDownload [--xslt-only] [--dont-download-photos] <output directory> [Flickr username] [HTML footer message]");
+        System.Environment.Exit (1);
       }
+
+    static void initialize(string[] argv)
+      {
+        WriteProgramBanner();
+
+        int curArgPos = 0;
+        if (argv.Length < curArgPos)
+          usage ();
+
+        while (argv[curArgPos].StartsWith ("-"))
+          {
+            if (argv[curArgPos].Equals("--xslt-only"))
+              xsltModeOnly = true;
+            else if (argv[curArgPos].Equals("--dont-download-photos"))
+              downloadPhotos = false;
+            else
+              usage ();
+
+            curArgPos++;
+          }
+
+        if (argv.Length < curArgPos)
+          usage ();
+        outputPath = argv[curArgPos++];
+
+        if (argv.Length > curArgPos)
+          flickrUsername = argv[curArgPos++];
+
+        if (argv.Length > curArgPos)
+          footerMessage = argv[curArgPos++];
+
+        if (argv.Length > curArgPos)
+          usage ();
+       
+        System.IO.Directory.CreateDirectory (outputPath);
+
+        toplevelXmlFile = System.IO.Path.Combine (outputPath, "sets.xml");
+        toplevelHtmlFile = System.IO.Path.Combine (outputPath, "index.html");
+        toplevelPhotosCss = System.IO.Path.Combine (outputPath, "photos.css");
+
+        xsltBasePath = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly().Location), "..");
+      }
+
+
+    static string getSetPhotoSetXmlFile(string photoSetId)
+      {
+        string setDirectory = System.IO.Path.Combine (outputPath, photoSetId);
+        return (System.IO.Path.Combine (setDirectory, "photos.xml"));
+      }
+
+    static string getSetPhotoSetHtmlFile(string photoSetId)
+      {
+        string setDirectory = System.IO.Path.Combine (outputPath, photoSetId);
+        return (System.IO.Path.Combine (setDirectory, "index.html"));
+      }
+
+    static void addXmlTextNode (System.Xml.XmlDocument xmlDoc, System.Xml.XmlElement parent, string name, string value)
+      {
+        System.Xml.XmlElement element = xmlDoc.CreateElement (name);
+        parent.AppendChild (element);
+
+        if (value != "")
+          {
+            System.Xml.XmlText text = xmlDoc.CreateTextNode (value);
+            element.AppendChild (text);
+          }
+      }
+
+    static void PerformXsltTransformation(string xsltSetting, string xmlFile, string outputFile)
+      {
+        string xsltFile = System.Configuration.ConfigurationManager.AppSettings[xsltSetting];
+        if (xsltFile == null || xsltFile == "")
+          {
+            System.Console.WriteLine ("The setting " + xsltSetting + " is not set in the application config file.");
+            System.Environment.Exit (1);
+          }
+
+        xsltFile = System.IO.Path.Combine (xsltBasePath, xsltFile);
+
+        System.Console.WriteLine ("Performing XSLT transformation on " + xmlFile + " using " + xsltFile + ". " + outputFile + " will be created.");
+
+        try
+          {
+            System.Xml.XPath.XPathDocument xPathDoc = new System.Xml.XPath.XPathDocument (xmlFile);
+
+            System.Xml.Xsl.XslTransform xsltTrans = new System.Xml.Xsl.XslTransform ();
+            xsltTrans.Load (xsltFile);
+            
+            MultiOutput.MultiXmlTextWriter outputXHtml = new MultiOutput.MultiXmlTextWriter (outputFile, null);
+
+            xsltTrans.Transform (xPathDoc, null, outputXHtml);        
+
+            outputXHtml.Close() ;
+          }
+        catch (System.Exception e)
+          {
+            System.Console.WriteLine ("Error performing the XSLT transformation: " + e.Message);
+          }
+      }
+
+    static void CopyPhotosDotCSS ()
+      {
+        string sourceFile = System.Configuration.ConfigurationManager.AppSettings["photosCssFile"];
+        if (sourceFile == null || sourceFile == "")
+          {
+            System.Console.WriteLine ("The setting photosCssFile is not set in the application config file.");
+            System.Environment.Exit (1);
+          }
+
+        sourceFile = System.IO.Path.Combine (xsltBasePath, sourceFile);
+        System.Console.WriteLine ("Copying " + sourceFile + " to " + toplevelPhotosCss);
+        System.IO.File.Copy (sourceFile, toplevelPhotosCss, true);
+      }
+
+    static void lookupUserNameInTopLevelXmlFile ()
+      {
+        if (flickrUsername != null)
+          return;
+
+        System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument ();
+        xmlDoc.Load (toplevelXmlFile);
+
+        System.Xml.XmlNodeList nameNodes = xmlDoc.GetElementsByTagName ("flickrUsername");
+        if (nameNodes.Count == 0 || nameNodes[0].ChildNodes.Count == 0 ||
+            nameNodes[0].ChildNodes[0].Value == null)
+          return;
+
+        flickrUsername = nameNodes[0].ChildNodes[0].Value;
+      }
+
+    static void performXsltOnlyMode ()
+      {
+        System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument ();
+        xmlDoc.Load (toplevelXmlFile);
+
+        foreach (System.Xml.XmlNode dirNode in xmlDoc.GetElementsByTagName ("directory"))
+          {
+            string photoSetId = dirNode.ChildNodes[0].Value;
+
+            string xmlFile = getSetPhotoSetXmlFile(photoSetId);
+            string htmlFile = getSetPhotoSetHtmlFile(photoSetId);
+            PerformXsltTransformation("setXsltFile", xmlFile, htmlFile);
+          }
+
+        PerformXsltTransformation("allSetsXsltFile", toplevelXmlFile, toplevelHtmlFile);
+        CopyPhotosDotCSS ();
+      }
+
+
 
     static void WriteAuthToken(string authToken)
       {
@@ -53,33 +211,17 @@ static class FlickrDownload
         config.Save();
       }
 
-    static void initialize(string[] argv)
+    static void initFlickrSession()
       {
-        WriteProgramBanner();
-
-        if (argv.Length < 1 || argv.Length > 3)
+        lookupUserNameInTopLevelXmlFile ();
+        if (flickrUsername == null)
           {
-            usage();
+            System.Console.WriteLine ("Error: A Flickr username was not specified on the command line,");
+            System.Console.WriteLine ("nor could it be found in the XML file");
+            System.Console.WriteLine (toplevelXmlFile);
             System.Environment.Exit (1);
           }
 
-        if (argv.Length >= 2)
-          outputPath = argv[1];
-        else
-          outputPath = ".";
-
-        if (argv.Length >= 3)
-          footerMessage = argv[2];
-       
-        System.IO.Directory.CreateDirectory (outputPath);
-
-        xsltBasePath = System.IO.Path.Combine (System.IO.Path.GetDirectoryName (System.Reflection.Assembly.GetExecutingAssembly().Location), "..");
-
-        initFlickrSession();
-      }
-
-    static void initFlickrSession()
-      {
         flickr = new FlickrNet.Flickr ("16c1a6a31f28e670500d02f6b13935b1", "0fa4d39da5eab415");
 
         string authToken = System.Configuration.ConfigurationManager.AppSettings["flickrAuthToken"];
@@ -169,50 +311,6 @@ static class FlickrDownload
           }
       }
 
-    static void addXmlTextNode (System.Xml.XmlDocument xmlDoc, System.Xml.XmlElement parent, string name, string value)
-      {
-        System.Xml.XmlElement element = xmlDoc.CreateElement (name);
-        parent.AppendChild (element);
-
-        if (value != "")
-          {
-            System.Xml.XmlText text = xmlDoc.CreateTextNode (value);
-            element.AppendChild (text);
-          }
-      }
-
-    static void PerformXsltTransformation(string xsltSetting, string xmlFile, string outputFile)
-      {
-        string xsltFile = System.Configuration.ConfigurationManager.AppSettings[xsltSetting];
-        if (xsltFile == null || xsltFile == "")
-          {
-            System.Console.WriteLine ("The setting " + xsltSetting + " is not set in the application config file.");
-            System.Environment.Exit (1);
-          }
-
-        xsltFile = System.IO.Path.Combine (xsltBasePath, xsltFile);
-
-        System.Console.WriteLine ("Performing XSLT transformation on " + xmlFile + " using " + xsltFile + ". " + outputFile + " will be created.");
-
-        try
-          {
-            System.Xml.XPath.XPathDocument xPathDoc = new System.Xml.XPath.XPathDocument (xmlFile);
-
-            System.Xml.Xsl.XslTransform xsltTrans = new System.Xml.Xsl.XslTransform ();
-            xsltTrans.Load (xsltFile);
-            
-            MultiOutput.MultiXmlTextWriter outputXHtml = new MultiOutput.MultiXmlTextWriter (outputFile, null);
-
-            xsltTrans.Transform (xPathDoc, null, outputXHtml);        
-
-            outputXHtml.Close() ;
-          }
-        catch (System.Exception e)
-          {
-            System.Console.WriteLine ("Error performing the XSLT transformation: " + e.Message);
-          }
-      }
-
     static void DownloadPhotoSet(FlickrNet.Photoset set)
       {
         string setDirectory = System.IO.Path.Combine (outputPath, set.PhotosetId);
@@ -238,8 +336,8 @@ static class FlickrDownload
 
             FlickrNet.PhotoInfo pi = flickr.PhotosGetInfo (photo.PhotoId);
             
-            string thumbUrl = photo.ThumbnailUrl;
-            string thumbFile = photo.PhotoId + "_thumb.jpg";
+            string thumbUrl = photo.SquareThumbnailUrl;
+            string thumbFile = photo.PhotoId + "_thumb_sq.jpg";
             DownloadPicture (thumbUrl, System.IO.Path.Combine (setDirectory, thumbFile));
             addXmlTextNode (xmlDoc, photoXmlNode, "thumbnailFile", thumbFile);
             
@@ -265,6 +363,8 @@ static class FlickrDownload
             addXmlTextNode (xmlDoc, photoXmlNode, "title", photo.Title);
             addXmlTextNode (xmlDoc, photoXmlNode, "description", pi.Description);
             addXmlTextNode (xmlDoc, photoXmlNode, "dateTaken", photo.DateTaken.ToString());
+            addXmlTextNode (xmlDoc, photoXmlNode, "dateUploaded", photo.DateUploaded.ToString());
+            addXmlTextNode (xmlDoc, photoXmlNode, "license", photo.License);
             addXmlTextNode (xmlDoc, photoXmlNode, "tags", photo.CleanTags);
             
             try
@@ -287,15 +387,18 @@ static class FlickrDownload
               }
           }
 
-        string xmlFile = System.IO.Path.Combine (setDirectory, "photos.xml");
+        string xmlFile = getSetPhotoSetXmlFile(set.PhotosetId);
         xmlDoc.Save (xmlFile);
 
-        string htmlFile = System.IO.Path.Combine (setDirectory, "index.html");
+        string htmlFile = getSetPhotoSetHtmlFile(set.PhotosetId);
         PerformXsltTransformation("setXsltFile", xmlFile, htmlFile);
       }
 
     static void DownloadPicture (string url, string fileName)
       {
+        if (!downloadPhotos)
+          return;
+
         if (System.IO.File.Exists (fileName))
           {
             System.Console.WriteLine ("Skipping file " + fileName + " since it has already been downloaded.");
@@ -318,33 +421,29 @@ static class FlickrDownload
         output.Close ();
       }
 
-    static void CopyPhotosDotCSS (string destFile)
-      {
-        string sourceFile = System.Configuration.ConfigurationManager.AppSettings["photosCssFile"];
-        if (sourceFile == null || sourceFile == "")
-          {
-            System.Console.WriteLine ("The setting photosCssFile is not set in the application config file.");
-            System.Environment.Exit (1);
-          }
 
-        sourceFile = System.IO.Path.Combine (xsltBasePath, sourceFile);
-        System.Console.WriteLine ("Copying " + sourceFile + " to " + destFile);
-        System.IO.File.Copy (sourceFile, destFile);
-      }
 
     static int Main (string[] argv)
       {
         initialize (argv);
+        if (xsltModeOnly)
+          {
+            performXsltOnlyMode ();
+            return 0;
+          }
 
-        System.Console.WriteLine ("Downloading photo set information for user '" + argv[0] + "'");
+        initFlickrSession();
+
+        System.Console.WriteLine ("Downloading photo set information for user '" + flickrUsername + "'");
+
         FlickrNet.Photosets sets;
         try
           {
-            sets = flickr.PhotosetsGetList (flickr.PeopleFindByUsername (argv[0]).UserId);
+            sets = flickr.PhotosetsGetList (flickr.PeopleFindByUsername (flickrUsername).UserId);
           }
         catch (FlickrNet.FlickrException ex)
           {
-            System.Console.WriteLine ("Error retrieving photos for user " + argv[0] + ": " + ex.Message);
+            System.Console.WriteLine ("Error retrieving photos for user " + flickrUsername + ": " + ex.Message);
             return 1;
           }
           
@@ -354,6 +453,10 @@ static class FlickrDownload
 
         System.Xml.XmlElement setTopLevelXmlNode = xmlDoc.CreateElement ("sets");
         xmlDoc.AppendChild (setTopLevelXmlNode);
+
+        addXmlTextNode (xmlDoc, setTopLevelXmlNode, "flickrUsername", flickrUsername);
+        addXmlTextNode (xmlDoc, setTopLevelXmlNode, "title", "Photos from " + flickrUsername);
+        addXmlTextNode (xmlDoc, setTopLevelXmlNode, "description", "");
 
         if (footerMessage != null)
           addXmlTextNode (xmlDoc, setTopLevelXmlNode, "footerMessage", footerMessage);
@@ -372,13 +475,10 @@ static class FlickrDownload
             DownloadPhotoSet (set);
           }
           
-        string xmlFile = System.IO.Path.Combine (outputPath, "sets.xml");
-        xmlDoc.Save (xmlFile);
+        xmlDoc.Save (toplevelXmlFile);
 
-        string htmlFile = System.IO.Path.Combine (outputPath, "index.html");
-        PerformXsltTransformation("allSetsXsltFile", xmlFile, htmlFile);
-
-        CopyPhotosDotCSS (System.IO.Path.Combine (outputPath, "photos.css"));
+        PerformXsltTransformation("allSetsXsltFile", toplevelXmlFile, toplevelHtmlFile);
+        CopyPhotosDotCSS ();
 
         return 0;
       }
