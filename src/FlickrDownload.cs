@@ -61,7 +61,7 @@ static class FlickrDownload
         WriteProgramBanner();
 
         int curArgPos = 0;
-        if (argv.Length < curArgPos)
+        if (argv.Length < curArgPos + 1)
           usage ();
 
         while (argv[curArgPos].StartsWith ("-"))
@@ -78,7 +78,7 @@ static class FlickrDownload
             curArgPos++;
           }
 
-        if (argv.Length < curArgPos)
+        if (argv.Length < curArgPos + 1)
           usage ();
         outputPath = argv[curArgPos++];
 
