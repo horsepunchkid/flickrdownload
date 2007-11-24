@@ -31,11 +31,7 @@ wrote my own.
 FlickrDownload is written in C#. It uses the FlickrNet API library
 (http://www.codeplex.com/Wiki/View.aspx?ProjectName=FlickrNet) to communicate
 with Flickr. I developed it under Debian GNU/Linux and I use Mono to compile
-and run the application. It should also run under Windows with no problems. I
-have not tested this application under Windows though.
-
-I also included some XSLT stylesheets that can be used to generate some HTML
-files. 
+and run the application. I also verified that it runs under Windows XP.
 
 
 How it works
@@ -134,27 +130,34 @@ some XSLT stylesheets with this program.
 Instructions
 ------------
 
-Note: This instructions were written for *NIX based systems.
+FlickrDownload uses the following packages:
 
-Requirements:
-  Mono - http://www.mono-project.com/
   FlickrNet - http://www.codeplex.com/Wiki/View.aspx?ProjectName=FlickrNet
   MultiXmlTextWriter - already included. Homepage is at
       http://www.tkachenko.com/dotnet/multixmltextwriter.html
 
-Change into the FlickrDownload directory and type nant. If the compilation is 
-successful, it should create the binary bin/FlickrDownload.exe.
+These packages are already included in this distribution.
 
-You are now ready to start downloading your photos. Pick a location where you
-want to store your photos and run the following command:
+* Windows systems:
 
-mono /path/to/FlickrDownload.exe "Your User ID goes here" /destination/directory
+  Unzip the ZIP file into a directory on your computer. Run the following command:
 
-You should see messages like "Downloading file XXX...". You can run this program
-again at a future time and it will not download any photos that have already
-been downloaded. The various photos.xml files and a single sets.xml file will
-also be generated. Some HTML files will also be generated using some XSLT
-stylesheets based on the information inside the XML files.
+  \path\to\FlickrDownload.exe \destination\directory "Your User ID goes here"
+
+  Once it is complete, you should be able to open
+  \destination\directory\index.html in your web browser.
+
+
+* *NIX based systems:
+
+  You need to install Mono (http://www.mono-project.com/) before you can use
+  FlickrDownload. Once you have Mono installed, run the following command:
+
+  mono /path/to/FlickrDownload.exe /destination/directory "Your User ID goes here" 
+
+  Once it is complete, you should be able to open
+  /destination/directory/index.html in your web browser.
+
 
 TODO
 ----
@@ -163,14 +166,11 @@ This program is fairly primitive but it solves the problem that I had. I am
 releasing this because I am sure there are other people out there who want the
 same thing.
 
-My free time is fairly limited these days so I most likely won't have much time
-to add additional features to this program. I am open to accepting patches.
-Here are a few things that could be done to the program:
-
 * Right now, the program will only check for the file's existence to see if
   it should be downloaded from the server. If the file exists, but is 
   corrupted on the server, then a newer version will not be downloaded from
   Flickr.
+* Make the program easier to use.
 
 Brian Masney
 11/18/2007
