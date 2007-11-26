@@ -546,7 +546,7 @@ static class FlickrDownload
             addXmlTextNode (xmlDoc, setXmlNode, "title", set.Title);
             addXmlTextNode (xmlDoc, setXmlNode, "directory", set.PhotosetId);
 
-            string primaryPhoto = set.PrimaryPhotoId + "_thumb.jpg";
+            string primaryPhoto = set.PrimaryPhotoId + "_thumb_sq.jpg";
             addXmlTextNode (xmlDoc, setXmlNode, "thumbnailFile", set.PhotosetId + "/" + primaryPhoto);
 
             DownloadPhotoSet (set);
