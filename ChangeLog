@@ -1,0 +1,5 @@
+* Changes from FlickrDownload 0.2 to 0.3
+  - Fixed bug if a relative path was specified on the command line.
+  - The footer message is now stored in the toplevel XML configuration file
+    along with the Flickr username.
+  - The square thumbnails are now retrieved from Flickr.
