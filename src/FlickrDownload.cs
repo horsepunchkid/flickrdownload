@@ -80,7 +80,7 @@ static class FlickrDownload
 
         if (argv.Length < curArgPos + 1)
           usage ();
-        outputPath = argv[curArgPos++];
+        outputPath = System.IO.Path.GetFullPath (argv[curArgPos++]);
 
         if (argv.Length > curArgPos)
           flickrUsername = argv[curArgPos++];
@@ -186,27 +186,39 @@ static class FlickrDownload
           }
       }
 
-    static void lookupUserNameInTopLevelXmlFile ()
+    static void lookupInfoInTopLevelXmlFile ()
       {
-        if (flickrUsername != null)
-          return;
+        System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument ();
+        xmlDoc.Load (toplevelXmlFile);
 
-        try
+        if (flickrUsername == null)
           {
-            System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument ();
-            xmlDoc.Load (toplevelXmlFile);
-
-            System.Xml.XmlNodeList nameNodes = xmlDoc.GetElementsByTagName ("flickrUsername");
-            if (nameNodes.Count == 0 || nameNodes[0].ChildNodes.Count == 0 ||
-                nameNodes[0].ChildNodes[0].Value == null)
-              return;
-
-            flickrUsername = nameNodes[0].ChildNodes[0].Value;
+            try
+              {
+                System.Xml.XmlNodeList nameNodes = xmlDoc.GetElementsByTagName ("flickrUsername");
+                if (nameNodes.Count > 0 && nameNodes[0].ChildNodes.Count > 0 &&
+                    nameNodes[0].ChildNodes[0].Value != null)
+                  flickrUsername = nameNodes[0].ChildNodes[0].Value;
+              }
+            catch (System.Exception e)
+              {
+                System.Console.Error.WriteLine ("Error looking up the flickrUsername tag in the file " + toplevelXmlFile + ": " + e.Message);
+                System.Environment.Exit (1);
+              }
           }
-        catch (System.Exception e)
+
+        if (footerMessage == null)
           {
-            System.Console.Error.WriteLine ("Error looking up the flickrUsername tag in the file " + toplevelXmlFile + ": " + e.Message);
-            System.Environment.Exit (1);
+            try
+              {
+                System.Xml.XmlNodeList nameNodes = xmlDoc.GetElementsByTagName ("footerMessage");
+                if (nameNodes.Count > 0 && nameNodes[0].ChildNodes.Count > 0 &&
+                    nameNodes[0].ChildNodes[0].Value != null)
+                  footerMessage = nameNodes[0].ChildNodes[0].Value;
+              }
+            catch (System.Exception)
+              {
+              }
           }
       }
 
@@ -249,7 +261,7 @@ static class FlickrDownload
 
     static void initFlickrSession()
       {
-        lookupUserNameInTopLevelXmlFile ();
+        lookupInfoInTopLevelXmlFile ();
         if (flickrUsername == null)
           {
             System.Console.Error.WriteLine ("Error: A Flickr username was not specified on the command line,");
