@@ -189,7 +189,14 @@ static class FlickrDownload
     static void lookupInfoInTopLevelXmlFile ()
       {
         System.Xml.XmlDocument xmlDoc = new System.Xml.XmlDocument ();
-        xmlDoc.Load (toplevelXmlFile);
+        try
+          {
+            xmlDoc.Load (toplevelXmlFile);
+          }
+        catch (System.IO.FileNotFoundException)
+          {
+            return;
+          }
 
         if (flickrUsername == null)
           {
