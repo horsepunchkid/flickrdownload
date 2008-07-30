@@ -115,6 +115,12 @@ static class FlickrDownload
         return (System.IO.Path.Combine (setDirectory, "photos.xml"));
       }
 
+    static string getSetPhotoDetailSetHtmlFile(string photoSetId)
+      {
+        string setDirectory = System.IO.Path.Combine (outputPath, photoSetId);
+        return (System.IO.Path.Combine (setDirectory, "detail.html"));
+      }
+
     static string getSetPhotoSetHtmlFile(string photoSetId)
       {
         string setDirectory = System.IO.Path.Combine (outputPath, photoSetId);
@@ -242,7 +248,9 @@ static class FlickrDownload
 
             string xmlFile = getSetPhotoSetXmlFile(photoSetId);
             string htmlFile = getSetPhotoSetHtmlFile(photoSetId);
+            string detailHtmlFile = getSetPhotoDetailSetHtmlFile(photoSetId);
             PerformXsltTransformation("setXsltFile", xmlFile, htmlFile);
+            PerformXsltTransformation("setDetailXsltFile", xmlFile, detailHtmlFile);
           }
 
         PerformXsltTransformation("allSetsXsltFile", toplevelXmlFile, toplevelHtmlFile);
@@ -469,7 +477,9 @@ static class FlickrDownload
         xmlDoc.Save (xmlFile);
 
         string htmlFile = getSetPhotoSetHtmlFile(set.PhotosetId);
+        string detailHtmlFile = getSetPhotoDetailSetHtmlFile(set.PhotosetId);
         PerformXsltTransformation("setXsltFile", xmlFile, htmlFile);
+        PerformXsltTransformation("setDetailXsltFile", xmlFile, detailHtmlFile);
       }
 
     static void DownloadPicture (string url, string fileName)

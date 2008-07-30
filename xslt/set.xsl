@@ -50,6 +50,7 @@
       </center>
 
       <div class="back_to_main"><a href="../index.html">Back to sets</a></div>
+      <div class="set_detail"><a href="detail.html">Detailed View</a></div>
 
       <xsl:if test="footerMessage">
         <div class="copyright"><xsl:copy-of select="footerMessage"/></div>

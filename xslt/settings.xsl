@@ -17,6 +17,7 @@
 
 <xsl:variable name="sets_per_row" select="5"/>
 <xsl:variable name="photos_per_row" select="6"/>
+<xsl:variable name="detail_photos_per_row" select="2"/>
 
 <xsl:variable name="thumbnail_height" select="75"/>
 <xsl:variable name="thumbnail_width" select="75"/>
