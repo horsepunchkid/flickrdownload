@@ -29,23 +29,34 @@
       <xsl:variable name="num_rows" select="ceiling (count (photo) div $photos_per_row)"/>
 
       <center>
-      <table cellspacing="0" cellpadding="0">
-        <xsl:attribute name="width">
-          <xsl:choose>
-            <xsl:when test="count (photo) &lt; $photos_per_row">
-              <xsl:value-of select="$thumbnail_width * count (photo)"/>
-            </xsl:when>
-            <xsl:otherwise>
-              <xsl:value-of select="$thumbnail_width * $photos_per_row"/>
-            </xsl:otherwise>
-          </xsl:choose>
-        </xsl:attribute>
+      <table cellspacing="20" cellpadding="0">
+      <tr>
+        <td valign="top">
+          <xsl:for-each select="photo[primarySetPhoto='true']">
+            <a href="{id}.html"><img src="{mediumFile}"/></a>
+          </xsl:for-each>
+        </td>
+        <td valign="top">
+          <table cellspacing="0" cellpadding="0">
+          <xsl:attribute name="width">
+            <xsl:choose>
+              <xsl:when test="count (photo) &lt; $photos_per_row">
+                <xsl:value-of select="$thumbnail_width * count (photo)"/>
+              </xsl:when>
+              <xsl:otherwise>
+                <xsl:value-of select="$thumbnail_width * $photos_per_row"/>
+              </xsl:otherwise>
+            </xsl:choose>
+          </xsl:attribute>
 
-        <xsl:call-template name="generate_row">
-          <xsl:with-param name="pos"><xsl:value-of select="1"/></xsl:with-param>
-          <xsl:with-param name="stop_pos"><xsl:value-of select="$num_rows"/></xsl:with-param>
-          <xsl:with-param name="photos_per_row"><xsl:value-of select="$photos_per_row"/></xsl:with-param>
-        </xsl:call-template>
+          <xsl:call-template name="generate_row">
+            <xsl:with-param name="pos"><xsl:value-of select="1"/></xsl:with-param>
+            <xsl:with-param name="stop_pos"><xsl:value-of select="$num_rows"/></xsl:with-param>
+            <xsl:with-param name="photos_per_row"><xsl:value-of select="$photos_per_row"/></xsl:with-param>
+          </xsl:call-template>
+          </table>
+        </td>
+      </tr>
       </table>
       </center>
 

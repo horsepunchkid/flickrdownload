@@ -443,6 +443,10 @@ static class FlickrDownload
               }
 
             addXmlTextNode (xmlDoc, photoXmlNode, "id", photo.PhotoId);
+
+            if (photo.PhotoId == set.PrimaryPhotoId)
+              addXmlTextNode (xmlDoc, photoXmlNode, "primarySetPhoto", "true");
+
             addXmlTextNode (xmlDoc, photoXmlNode, "title", photo.Title);
             addXmlTextNode (xmlDoc, photoXmlNode, "description", pi.Description);
             addXmlTextNode (xmlDoc, photoXmlNode, "dateTaken", photo.DateTaken.ToString());
