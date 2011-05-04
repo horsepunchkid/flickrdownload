@@ -1,175 +1,85 @@
 FlickrDownload
+http://code.google.com/p/flickrdownload/
+
 
 Introduction
 ------------
 
-I have become a huge fan of Flickr over the last few years. I've really
-enjoyed looking at other people's photos and uploading photos of my own. I
-currently have about 6,500+ photos on my account and I have spent a lot of time
-organizing and labeling those photos.
+FlickrDownload is a program that runs from the command that allows you to
+download all of your photos and the associated metadata from Flickr. The
+metadata is stored in a XML file and HTML files are generated so that you
+have a fully-functioning static copy of your Flickr account on your local
+computer. It supports the following features:
 
-I have been concerned about having all of my photos locked up in Flickr for
-some time now. There are a lot of great people in the Flickr community but I
-don't like having all of my photos locked up in a proprietary system. I don't
-mind having my photos on there but I would also like to have the exact same
-data in an open format on my hard drive. I used to keep a separate copy of my
-photos on my hard drive but that copy was not organized as nicely as the
-photos on my Flickr account.
-
-There have also been times when I wanted to make CDs of a few sets to give
-out. Flickr does not have an interface that allows you to download all of your
-photos at once. There are services that allow you to order DVDs of your photos
-but I have not been happy with those DVDs. I also don't like the idea of having
-to order DVDs to get a backup of my photos.
-
-I've found a few programs that would backup your Flickr account but some
-of them would truncate the title and not show the description. I wanted a
-program that would download all of my photos and store the information about
-each photo in an XML file. I could not find a program that would do that so I
-wrote my own.
+- Downloads information about all of your sets and collections.
+- Supports downloading photos and videos.
+- Downloads the following image sizes: small square, medium and full-sized
+  images.
+- A statistics page is generated with the following information: privacy stats
+  (# of public and private photos), number of photos tagged, number of photos
+  geotagged, disk space usage, photo licenses used, stats for each set (disk
+  space and number of photos). The statistics are broken out separately for
+  photos and videos.
+- The statistics page will show you if you have any photos or videos that were
+  uploaded multiple times.
+- All data is stored in an open format for the long-term preservation of your
+  data.
 
 FlickrDownload is written in Java and uses the flickrj API library to
 communicate with Flickr. 
 
 
-How it works
-------------
+Install from source instructions
+--------------------------------
 
-The program has a command line interface that does not have many bells and
-whistles. You can specify your account name and the directory where the photos
-should be stored. It will create subdirectories for each of your sets in the
-destination directory. The program will check to see if the photos already
-exist and if so, it will not download the photos again. This allows the
-program to be ran in an incremental mode. I always run the program after I 
-upload new photos to Flickr.
+1) Go to http://code.google.com/p/flickrdownload/source/checkout for
+   instructions on how to check out the latest source code from subversion.
 
-Here is an example of some of the files are directories that are created by
-the application:
+2) You will need to have Java installed on your computer. Type 'java -version'
+   to see if it is installed. If not, Ubuntu GNU/Linux users can run
+   'apt-get install openjdk-6-jdk openjdk-6-jre' to get a copy installed.
 
-72157594267391686
-72157603126591058
-72157602581284555
-sets.xml
+3) You will need to have ant installed to compile the source code. Ubuntu
+   GNU/Linux users can run 'apt-get install ant'.
 
-The long numbers are the IDs of your sets. I did not use the title of the set as
-the directory name so that the set names can be easily renamed on Flickr. This
-allows the incremental backup feature to work correctly.
-
-The sets.xml file contains some basic information about each set. Here is an
-example:
-
-<sets>
-  <set>
-    <title>Some of my favorite photos</title>
-    <directory>72157594267391686</directory>
-    <thumbnailFile>72157594267391686/208567793_thumb.jpg</thumbnailFile>
-  </set>
-  <set>
-    <title>A Secret Cave</title>
-    <directory>72157603126591058</directory>
-    <thumbnailFile>72157603126591058/1971392366_thumb.jpg</thumbnailFile>
-  </set>
-  <set>
-    <title>2007 Bridge Day Rappel</title>
-    <directory>72157602581284555</directory>
-    <thumbnailFile>72157602581284555/1672742729_thumb.jpg</thumbnailFile>
-  </set>
-</sets>
-
-Now, change into one of the directories. You will see files like this:
-
-1672724019_med.jpg
-1672724019_orig.jpg
-1672724019_thumb.jpg
-1970501857_med.jpg
-1970501857_orig.jpg
-1970501857_thumb.jpg
-photos.xml
-
-The photo ID from Flickr is used as the filename so that the incremental backup
-feature works correctly. The thumbnail, medium and original files are downloaded
-from the server. A photos.xml file is created the has some information about
-the photos. Here is an example:
-
-<set>
-  <title>Some of my favorite photos</title>
-  <description/>
-  <photo>
-    <id>1672724019</id>
-    <title>Mary and Brian on the catwalk</title>
-    <description/>
-    <dateTaken>10/20/2007 10:15:13</dateTaken>
-    <privacy>
-      <public/>
-    </privacy>
-    <originalFile>1672724019_orig.jpg</originalFile>
-    <mediumFile>1672724019_med.jpg</mediumFile>
-    <thumbnailFile>1672724019_thumb.jpg</thumbnailFile>
-  </photo>
-  <photo>
-    <id>1970501857</id>
-    <title>Formations</title>
-    <description/>
-    <dateTaken>11/10/2007 18:02:36</dateTaken>
-    <privacy>
-      <public/>
-    </privacy>
-    <originalFile>1970501857_orig.jpg</originalFile>
-    <mediumFile>1970501857_med.jpg</mediumFile>
-    <thumbnailFile>1970501857_thumb.jpg</thumbnailFile>
-  </photo>
-</set>
-
-Since all of that information is stored in XML, a XSLT stylesheet is used
-to generate HTML files that can be viewed inside a web browser. I included
-some XSLT stylesheets with this program.
+4) In the flickrdownload directory, type 'ant' and the compiled files will be
+   placed in the build directory.
 
 
-Instructions
-------------
+How to run
+----------
 
-FlickrDownload uses the following packages:
+1) In the build directory, you will see a FlickrDownload.jar file, along with
+   several other files that end in jar. Type
+   'java -jar FlickrDownload.jar' and you should see something like this:
 
-  FlickrNet - http://www.codeplex.com/Wiki/View.aspx?ProjectName=FlickrNet
-  MultiXmlTextWriter - already included. Homepage is at
-      http://www.tkachenko.com/dotnet/multixmltextwriter.html
+FlickrDownload 0.4 - Copyright(C) 2007,2010 Brian Masney <masneyb@gmail.com>.
+If you have any questions, comments, or suggestions about this program, please
+feel free to email them to me. You can always find out the latest news about
+FlickrDownload from my website at http://code.google.com/p/flickrdownload/.
 
-These packages are already included in this distribution.
+FlickrDownload is distributed under the terms of the GPLv3 and comes with
+ABSOLUTELY NO WARRANTY; for details, see the COPYING file. This is free
+software, and you are welcome to redistribute it under certain conditions;
+for details, see COPYING file.
 
-* Windows systems:
+Option "--photosDir" is required
+usage: FlickrDownload  [--addExtensionToUnknownFiles VAL] [--authDir VAL] 
+          [--authUsername VAL] [--debug] [--limitToSet VAL ...] [--partial] 
+          --photosDir VAL [--photosUsername VAL]
 
-  Unzip the ZIP file into a directory on your computer. Run the following command:
+I typically run it like this:
 
-  \path\to\FlickrDownload.exe \destination\directory "Your User ID goes here"
+java -jar FlickrDownload.jar --partial --photosDir /path/to/flickr/backup
 
-  Once it is complete, you should be able to open
-  \destination\directory\index.html in your web browser.
+You will have to specify the --authUsername option the first time that you run
+the program to authenticate FlickrDownload with your flickr account. The
+authentication token is stored in the same directory with your Flickr backup.
 
+Once the backup is finished, open the sets.html file in your web browser.
 
-* *NIX based systems:
-
-  You need to install Mono (http://www.mono-project.com/) before you can use
-  FlickrDownload. Once you have Mono installed, run the following command:
-
-  mono /path/to/FlickrDownload.exe /destination/directory "Your User ID goes here" 
-
-  Once it is complete, you should be able to open
-  /destination/directory/index.html in your web browser.
-
-
-TODO
-----
-
-This program is fairly primitive but it solves the problem that I had. I am
-releasing this because I am sure there are other people out there who want the
-same thing.
-
-* Right now, the program will only check for the file's existence to see if
-  it should be downloaded from the server. If the file exists, but is 
-  corrupted on the server, then a newer version will not be downloaded from
-  Flickr.
-* Make the program easier to use.
 
 Brian Masney
-11/18/2007
+masneyb@gmail.com
+05/04/2011
 http://www.flickr.com/photos/masneyb/sets/
