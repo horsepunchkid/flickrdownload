@@ -1,3 +1,10 @@
+* Changes from FlickrDownload 0.3 to 0.4
+  - Rewritten in Java instead of C#.
+  - New XML file format contains more Flickr metadata.
+  - Added support for downloading collection information and videos.
+  - Added page with statistics about your Flickr account.
+  - The statistics page shows duplicate photos on your account.
+
 * Changes from FlickrDownload 0.2 to 0.3
   - Fixed bug if a relative path was specified on the command line.
   - The footer message is now stored in the toplevel XML configuration file

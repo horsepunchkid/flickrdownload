@@ -3,16 +3,16 @@ FlickrDownload
 Introduction
 ------------
 
-I have become a huge fan of Flickr over the last year and a half. I've really
+I have become a huge fan of Flickr over the last few years. I've really
 enjoyed looking at other people's photos and uploading photos of my own. I
-currently have about 3,500 photos on my account and I have spent a lot of time
+currently have about 6,500+ photos on my account and I have spent a lot of time
 organizing and labeling those photos.
 
 I have been concerned about having all of my photos locked up in Flickr for
 some time now. There are a lot of great people in the Flickr community but I
 don't like having all of my photos locked up in a proprietary system. I don't
-mind having my photos on there but I also like to have the exact same data
-in an open format on my hard drive. I used to keep a separate copy of my
+mind having my photos on there but I would also like to have the exact same
+data in an open format on my hard drive. I used to keep a separate copy of my
 photos on my hard drive but that copy was not organized as nicely as the
 photos on my Flickr account.
 
@@ -24,14 +24,12 @@ to order DVDs to get a backup of my photos.
 
 I've found a few programs that would backup your Flickr account but some
 of them would truncate the title and not show the description. I wanted a
-program that would download all of my sets and store the information about
-each photo in a XML file. I could not find a program that would do that so I
+program that would download all of my photos and store the information about
+each photo in an XML file. I could not find a program that would do that so I
 wrote my own.
 
-FlickrDownload is written in C#. It uses the FlickrNet API library
-(http://www.codeplex.com/Wiki/View.aspx?ProjectName=FlickrNet) to communicate
-with Flickr. I developed it under Debian GNU/Linux and I use Mono to compile
-and run the application. I also verified that it runs under Windows XP.
+FlickrDownload is written in Java and uses the flickrj API library to
+communicate with Flickr. 
 
 
 How it works
