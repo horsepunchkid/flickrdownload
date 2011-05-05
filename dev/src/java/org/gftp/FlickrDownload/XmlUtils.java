@@ -89,8 +89,7 @@ public class XmlUtils {
 		if (localFilename != null) {
 			element.setAttribute("localFilename", displayLocalFilename)
 				.setAttribute("size", String.valueOf(localFilename.length()))
-				.setAttribute("md5sum", IOUtils.md5Sum(localFilename));
-
+				.setAttribute("md5sum", localFilename.exists() ? IOUtils.md5Sum(localFilename) : "");
 
 			if (localFilename.getName().endsWith(".jpg") || localFilename.getName().endsWith(".png")) {
 				Image image = new ImageIcon(localFilename.getAbsolutePath()).getImage();
