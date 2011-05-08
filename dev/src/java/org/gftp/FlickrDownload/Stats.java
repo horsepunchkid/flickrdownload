@@ -33,9 +33,8 @@ public class Stats {
 	public Element createStatsXml() throws FlickrException, IOException, SAXException, JDOMException {
 		Map<String, MediaStats> allStats = new HashMap<String, MediaStats>();
 
-		Map<String, Set> allSets = this.sets.getSets();
-		for (String setId : allSets.keySet()) {
-			File setXmlFilename = allSets.get(setId).getSetXmlFilename();
+		for (AbstractSet set : this.sets.getSets()) {
+			File setXmlFilename = set.getSetXmlFilename();
 			if (!setXmlFilename.exists())
 				continue;
 
@@ -135,7 +134,7 @@ public class Stats {
 						size += stats.diskSpaceByFileType.get(imageType);
 					stats.diskSpaceByFileType.put(imageType, size);
 
-					if (imageType.equals(Set.MEDIUM_PHOTO_DESCRIPTION))
+					if (imageType.equals(AbstractSet.MEDIUM_PHOTO_DESCRIPTION))
 						mediumMd5sum = StringUtils.trimToNull(imageElement.getAttributeValue("md5sum"));
 				}
 

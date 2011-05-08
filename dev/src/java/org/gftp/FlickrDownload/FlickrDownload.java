@@ -111,7 +111,10 @@ public class FlickrDownload {
 				new File(configuration.photosBaseDirectory, STATS_HTML_FILENAME));
 		createdFiles.add(STATS_HTML_FILENAME);
 
-		createdFiles.addAll(sets.performXsltTransformation());
+		sets.performXsltTransformation();
+		for (AbstractSet set : sets.getSets()) {
+			createdFiles.add(set.getSetId());
+		}
 		return createdFiles;
 	}
 

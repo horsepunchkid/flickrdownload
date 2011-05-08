@@ -14,10 +14,9 @@ package org.gftp.FlickrDownload;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.xml.transform.TransformerException;
 
@@ -34,7 +33,7 @@ public class Sets {
 	public static String SET_THUMBNAIL_FILENAME = "index.html";
 	public static String SET_DETAIL_FILENAME = "detail.html";
 
-	private Map<String,Set> sets = null;
+	private List<AbstractSet> sets = null;
 	private Configuration configuration;
 	private Flickr flickr;
 
@@ -44,36 +43,37 @@ public class Sets {
 		this.sets = getSets();
 	}
 
-	public Map<String,Set> getSets() throws FlickrException, IOException, SAXException {
+	public List<AbstractSet> getSets() throws FlickrException, IOException, SAXException {
 		if (this.sets != null)
 			return this.sets;
-		this.sets = new HashMap<String, Set>();
 
 		Logger.getLogger(Sets.class).info("Downloading photo set information");
 
-		Map<String,Set> setMap = new LinkedHashMap<String, Set>();
+		List<AbstractSet> setMap = new LinkedList<AbstractSet>();
         Iterator<Photoset> fsets = this.flickr.getPhotosetsInterface().getList(this.configuration.photosUser.getId()).getPhotosets().iterator();
         while (fsets.hasNext()) {
             Photoset fset = fsets.next();
-        	Set s = new Set(fset, this.configuration);
-        	setMap.put(fset.getId(), s);
+        	AbstractSet s = new Set(this.configuration, fset);
+        	setMap.add(s);
         }
+        
+        PhotosNotInASet photosNotInSet = new PhotosNotInASet(this.configuration, this.flickr);
+        if (photosNotInSet.getMediaCount() > 0)
+        	setMap.add(photosNotInSet);
 
         return setMap;
 	}
 	
 	public Element createTopLevelXml() throws JDOMException, IOException {
 		Element allSets = new Element("sets");
-    	for (String key : this.sets.keySet()) {
-    		allSets.addContent(this.sets.get(key).createToplevelXml());
+    	for (AbstractSet set : this.sets) {
+    		allSets.addContent(set.createToplevelXml());
     	}
     	return allSets;
 	}
 	
-	public Collection<String> performXsltTransformation() throws IOException, TransformerException {	
-    	for (String key : this.sets.keySet()) {
-    		Set set = this.sets.get(key);
-
+	public void performXsltTransformation() throws IOException, TransformerException {	
+    	for (AbstractSet set : this.sets) {
     		File setXmlFile = set.getSetXmlFilename();
     		if (!setXmlFile.exists())
     			continue;
@@ -87,26 +87,23 @@ public class Sets {
     				setXmlFile,
     				new File(setDir, SET_DETAIL_FILENAME));
     	}		
-    	return this.sets.keySet();
 	}
 
 	public void downloadAllPhotos(Collection<String> limitDownloadsToSets) throws Exception {
-		for (final String key : this.sets.keySet()) {
-			if (limitDownloadsToSets.size() > 0 && !limitDownloadsToSets.contains(key))
+		for (AbstractSet set : this.sets) {
+			if (limitDownloadsToSets.size() > 0 && !limitDownloadsToSets.contains(set.getSetId()))
 				continue;
 
-			final Set set = this.sets.get(key);
-
-			File setDir = new File(Sets.this.configuration.photosBaseDirectory, key);
+			File setDir = set.getSetDirectory();
 			setDir.mkdir();
 
 			File setXmlFilename = set.getSetXmlFilename();
 			if (Sets.this.configuration.partialDownloads && setXmlFilename.exists() && Stats.getMediaCount(setXmlFilename) == set.getMediaCount()) {
-				Logger.getLogger(getClass()).info("Skipping the download of set " + key);
+				Logger.getLogger(getClass()).info(String.format("Skipping the download of set %s - %s", set.getSetId(), set.getSetTitle()));
 				continue;
 			}
 
-			XmlUtils.outputXmlFile(setXmlFilename, set.createSetlevelXml(this.flickr, setDir));
+			XmlUtils.outputXmlFile(setXmlFilename, set.createSetlevelXml(this.flickr));
 		}
 	}
 }

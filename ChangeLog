@@ -1,4 +1,8 @@
-* Changes from FlickrDownload 0.3 to 0.4
+* Changes from FlickrDownload 0.5 to 0.6
+  - Added ability to download photos that are not in a set
+  - Minor code cleanups
+
+* Changes from FlickrDownload 0.4 to 0.5
   - Rewritten in Java instead of C#.
   - New XML file format contains more Flickr metadata.
   - Added support for downloading collection information and videos.
