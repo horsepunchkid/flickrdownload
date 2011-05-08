@@ -61,9 +61,12 @@
       <xsl:value-of select="format-number($size div 1024, '###,###.#')"/>
       <xsl:text> KB</xsl:text>
     </xsl:when>
-    <xsl:otherwise>
+    <xsl:when test="$size > 0">
       <xsl:value-of select="format-number($size, '###,###.#')"/>
       <xsl:text> bytes</xsl:text>
+    </xsl:when>
+    <xsl:otherwise>
+      <!-- NOOP -->
     </xsl:otherwise>
   </xsl:choose>
 </xsl:template>
