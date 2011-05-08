@@ -37,8 +37,7 @@ import com.aetrion.flickr.photosets.Photoset;
 import com.aetrion.flickr.tags.Tag;
 
 public class Set {
-	private static String SET_XML_FILENAME = "photos.xml";
-
+	public static String SET_XML_FILENAME = "photos.xml";
 	public static String SMALL_SQUARE_PHOTO_DESCRIPTION = "Small Square";
 	public static String THUMBNAIL_PHOTO_DESCRIPTION = "Thumbnail";
 	public static String SMALL_PHOTO_DESCRIPTION = "Small";

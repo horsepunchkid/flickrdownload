@@ -17,6 +17,7 @@ import java.io.IOException;
 import org.jdom.Element;
 import org.xml.sax.SAXException;
 
+import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.photocollections.PhotoCollection;
 import com.aetrion.flickr.photocollections.PhotoCollectionsInterface;
@@ -25,13 +26,15 @@ import com.aetrion.flickr.photosets.Photoset;
 public class Collections {
 	public static String COLLECTIONS_ICON_DIRECTORY = "collections";
 	private Configuration configuration;
+	private Flickr flickr;
 
-	public Collections(Configuration configuration) {
+	public Collections(Configuration configuration, Flickr flickr) {
 		this.configuration = configuration;
+		this.flickr = flickr;
 	}
 	
 	public Element createTopLevelXml() throws FlickrException, SAXException, IOException {
-		PhotoCollectionsInterface collectionsInterface = this.configuration.flickr.getPhotoCollectionsInterface();
+		PhotoCollectionsInterface collectionsInterface = this.flickr.getPhotoCollectionsInterface();
 
 		File iconsDir = new File(this.configuration.photosBaseDirectory, COLLECTIONS_ICON_DIRECTORY);
 		iconsDir.mkdir();

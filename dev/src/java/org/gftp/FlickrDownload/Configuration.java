@@ -24,7 +24,6 @@ import com.aetrion.flickr.auth.Auth;
 import com.aetrion.flickr.people.User;
 
 public class Configuration {
-	public Flickr flickr;
 	public User authUser;
 	public User photosUser;
 	public File photosBaseDirectory;
@@ -36,16 +35,14 @@ public class Configuration {
 	public String addExtensionToUnknownFiles;
 	public Auth auth;
 	
-	public Configuration(File photosBaseDirectory, File authDirectory, String userName) throws IOException, FlickrException, SAXException, ParserConfigurationException {
-		this.flickr = Authentication.getFlickr();
-
+	public Configuration(Flickr flickr, File photosBaseDirectory, File authDirectory, String userName) throws IOException, FlickrException, SAXException, ParserConfigurationException {
 		this.photosBaseDirectory = photosBaseDirectory;
 		this.photosBaseDirectory.mkdirs();
 
 		this.authDirectory = authDirectory != null ? authDirectory : photosBaseDirectory;
 		this.authDirectory.mkdirs();
 
-		this.auth = Authentication.getAuthToken(this.flickr, this.authDirectory, userName);
-		this.authUser = this.flickr.getPeopleInterface().getInfo(this.auth.getUser().getId());
+		this.auth = Authentication.getAuthToken(flickr, this.authDirectory, userName);
+		this.authUser = flickr.getPeopleInterface().getInfo(this.auth.getUser().getId());
 	}
 }

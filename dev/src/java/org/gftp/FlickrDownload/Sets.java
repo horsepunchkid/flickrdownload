@@ -26,6 +26,7 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.xml.sax.SAXException;
 
+import com.aetrion.flickr.Flickr;
 import com.aetrion.flickr.FlickrException;
 import com.aetrion.flickr.photosets.Photoset;
 
@@ -34,10 +35,12 @@ public class Sets {
 	public static String SET_DETAIL_FILENAME = "detail.html";
 
 	private Map<String,Set> sets = null;
-	protected Configuration configuration;
+	private Configuration configuration;
+	private Flickr flickr;
 
-	public Sets(Configuration configuration) throws Exception {
+	public Sets(Configuration configuration, Flickr flickr) throws Exception {
 		this.configuration = configuration;
+		this.flickr = flickr;
 		this.sets = getSets();
 	}
 
@@ -49,7 +52,7 @@ public class Sets {
 		Logger.getLogger(Sets.class).info("Downloading photo set information");
 
 		Map<String,Set> setMap = new LinkedHashMap<String, Set>();
-        Iterator<Photoset> fsets = this.configuration.flickr.getPhotosetsInterface().getList(this.configuration.photosUser.getId()).getPhotosets().iterator();
+        Iterator<Photoset> fsets = this.flickr.getPhotosetsInterface().getList(this.configuration.photosUser.getId()).getPhotosets().iterator();
         while (fsets.hasNext()) {
             Photoset fset = fsets.next();
         	Set s = new Set(fset, this.configuration);
@@ -103,7 +106,7 @@ public class Sets {
 				continue;
 			}
 
-			XmlUtils.outputXmlFile(setXmlFilename, set.createSetlevelXml(Sets.this.configuration.flickr, setDir));
+			XmlUtils.outputXmlFile(setXmlFilename, set.createSetlevelXml(this.flickr, setDir));
 		}
 	}
 }

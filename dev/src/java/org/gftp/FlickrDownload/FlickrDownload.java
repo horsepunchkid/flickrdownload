@@ -169,7 +169,9 @@ public class FlickrDownload {
 
 		Collection<String> createdToplevelFiles = new HashSet<String>();
 
+		Flickr flickr = Authentication.getFlickr();
 		Configuration configuration = new Configuration(
+				flickr,
 				new File(values.photosDirectory), 
 					StringUtils.isBlank(values.authDirectory) ? null : new File(values.authDirectory), 
 				values.authUsername);
@@ -179,7 +181,7 @@ public class FlickrDownload {
 		if (StringUtils.isBlank(values.photosUsername))
 			configuration.photosUser = configuration.authUser;
 		else {
-			PeopleInterface pi = configuration.flickr.getPeopleInterface();
+			PeopleInterface pi = flickr.getPeopleInterface();
 			User pu = pi.findByUsername(values.photosUsername);
 			if (pu == null)
 				throw new IllegalArgumentException("Cannot find user with ID " + values.photosUsername);
@@ -200,8 +202,8 @@ public class FlickrDownload {
 			Flickr.debugStream = true;
 		}
 
-		Collections collections = new Collections(configuration);
-		Sets sets = new Sets(configuration);
+		Collections collections = new Collections(configuration, flickr);
+		Sets sets = new Sets(configuration, flickr);
 
 		// The photos must be downloaded before the toplevel XML files are created
 		sets.downloadAllPhotos(values.limitDownloadsToSets);
