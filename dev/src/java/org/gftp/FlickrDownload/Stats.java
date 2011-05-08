@@ -12,6 +12,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.WordUtils;
 import org.apache.log4j.Logger;
 import org.jdom.Document;
@@ -121,7 +122,7 @@ public class Stats {
 				MediaStats stats = allStats.get(type);
 
 				String mediaId = mediaElement.getChildText("id");
-				String origMd5sum = null;
+				String mediumMd5sum = null;
 
 				for (Element imageElement : (List<Element>) mediaElement.getChildren("image")) {
 					String sizeStr = imageElement.getAttributeValue("size");
@@ -134,8 +135,8 @@ public class Stats {
 						size += stats.diskSpaceByFileType.get(imageType);
 					stats.diskSpaceByFileType.put(imageType, size);
 
-					if (imageType.equals(Set.ORIGINAL_MEDIA_DESCRIPTION))
-						origMd5sum = imageElement.getAttributeValue("md5sum");
+					if (imageType.equals(Set.MEDIUM_PHOTO_DESCRIPTION))
+						mediumMd5sum = StringUtils.trimToNull(imageElement.getAttributeValue("md5sum"));
 				}
 
 				// Be sure to calculate the disk space before this check...
@@ -146,10 +147,10 @@ public class Stats {
 				stats.mediaIdsSeen.add(mediaId);
 				stats.totalPhotos++;
 
-				if (origMd5sum != null) {
-					if (!stats.md5sums.containsKey(origMd5sum))
-						stats.md5sums.put(origMd5sum, new ArrayList<String>());
-					stats.md5sums.get(origMd5sum).add(mediaId);
+				if (mediumMd5sum != null) {
+					if (!stats.md5sums.containsKey(mediumMd5sum))
+						stats.md5sums.put(mediumMd5sum, new ArrayList<String>());
+					stats.md5sums.get(mediumMd5sum).add(mediaId);
 				}
 
 				Element privacy = mediaElement.getChild("privacy");
