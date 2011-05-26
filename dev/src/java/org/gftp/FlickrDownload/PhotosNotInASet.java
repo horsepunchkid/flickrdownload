@@ -36,10 +36,10 @@ public class PhotosNotInASet extends AbstractSet {
 		int pageNum = 1;
 		while (true) {
 			PhotoList photos = flickr.getPhotosInterface().getNotInSet(500, pageNum);
-			if (photos.getTotal() == 0)
+			if (photos.size() == 0)
 				break;
 
-			for (int i = 0; i < photos.getTotal(); i++) {
+			for (int i = 0; i < photos.size(); i++) {
 				Photo photo = (Photo) photos.get(i);
 				if (this.primaryPhotoId == null) {
 					this.primaryPhotoId = photo.getId();
@@ -56,7 +56,9 @@ public class PhotosNotInASet extends AbstractSet {
 
 	@Override
 	protected void download(Flickr flickr, Element setXml) throws IOException, SAXException, FlickrException {
-		processPhotoList(this.photoIds, flickr, setXml);			
+		for (BasePhoto photo : this.photoIds) {
+			processPhoto(photo, flickr, setXml);
+		}
 	}
 
 	@Override

@@ -17,7 +17,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
@@ -91,8 +90,7 @@ public abstract class AbstractSet {
 				.addContent(createStatsXml());
 	}
 
-	protected void processPhotoList(LinkedHashSet<BasePhoto> photoIds, Flickr flickr, Element setXml) throws IOException, SAXException, FlickrException {
-        for (BasePhoto basePhoto : photoIds) {
+	protected void processPhoto(BasePhoto basePhoto, Flickr flickr, Element setXml) throws IOException, SAXException, FlickrException {
             Photo photo = flickr.getPhotosInterface().getPhoto(basePhoto.getPhotoId(), basePhoto.getSecret());
 
             Element tagEle = new Element("tags");
@@ -116,14 +114,16 @@ public abstract class AbstractSet {
             }
 
             Element exifTagsEle = new Element("exif");
-            for (Exif exif : (Collection<Exif>) flickr.getPhotosInterface().getExif(photo.getId(), photo.getSecret())) {
-            	exifTagsEle.addContent(new Element("exif")
-            		.setAttribute("clean", StringUtils.defaultString(exif.getClean()))
-            		.setAttribute("label", StringUtils.defaultString(exif.getLabel()))
-            		.setAttribute("raw", StringUtils.defaultString(exif.getRaw()))
-            		.setAttribute("tag", StringUtils.defaultString(exif.getTag()))
-            		.setAttribute("tagspace", StringUtils.defaultString(exif.getTagspace()))
-            		.setAttribute("tagspaceId", StringUtils.defaultString(exif.getTagspaceId())));
+            if (this.configuration.downloadExifData) {
+            	for (Exif exif : (Collection<Exif>) flickr.getPhotosInterface().getExif(photo.getId(), photo.getSecret())) {
+            		exifTagsEle.addContent(new Element("exif")
+            			.setAttribute("clean", StringUtils.defaultString(exif.getClean()))
+            			.setAttribute("label", StringUtils.defaultString(exif.getLabel()))
+            			.setAttribute("raw", StringUtils.defaultString(exif.getRaw()))
+            			.setAttribute("tag", StringUtils.defaultString(exif.getTag()))
+            			.setAttribute("tagspace", StringUtils.defaultString(exif.getTagspace()))
+            			.setAttribute("tagspaceId", StringUtils.defaultString(exif.getTagspaceId())));
+            	}
             }
 
             String originalUrl = null;
@@ -207,7 +207,6 @@ public abstract class AbstractSet {
                	.addContent(notesEle)
                	.addContent(exifTagsEle)
             );
-        }
 	}
 
 	public Element createSetlevelXml(Flickr flickr) throws IOException, SAXException, FlickrException {

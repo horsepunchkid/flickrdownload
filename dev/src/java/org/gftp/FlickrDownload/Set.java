@@ -12,7 +12,6 @@
 package org.gftp.FlickrDownload;
 
 import java.io.IOException;
-import java.util.LinkedHashSet;
 
 import org.jdom.Element;
 import org.xml.sax.SAXException;
@@ -35,18 +34,18 @@ public class Set extends AbstractSet {
 	protected void download(Flickr flickr, Element setXml) throws IOException, SAXException, FlickrException {
 		int pageNum = 1;
 		int retrievedPhotos = 0;
+		int totalPhotos = 0;
 		do {
-			PhotoList photos = flickr.getPhotosetsInterface().getPhotos(getSetId(), 500, pageNum);
-			retrievedPhotos += photos.getTotal();
+			PhotoList photos = flickr.getPhotosetsInterface().getPhotos(getSetId(), 500, pageNum++);
 
-			LinkedHashSet<BasePhoto> photoIds = new LinkedHashSet<BasePhoto>();
-			for (int i = 0; i < photos.getTotal(); i++) {
+			totalPhotos = photos.getTotal();
+
+			for (int i = 0; i < photos.size(); i++) {
+				retrievedPhotos++;
 				Photo photo = (Photo) photos.get(i);
-				photoIds.add(new BasePhoto(photo));
+				processPhoto(new BasePhoto(photo), flickr, setXml);
 			}
-
-			processPhotoList(photoIds, flickr, setXml);
-		} while (retrievedPhotos < this.set.getPhotoCount());		
+		} while (retrievedPhotos < totalPhotos);		
 	}
 
 	@Override

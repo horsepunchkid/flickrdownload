@@ -65,7 +65,10 @@ public class FlickrDownload {
 		public List<String> limitDownloadsToSets = new ArrayList<String>();		
 
 		@Option(name="--debug", required=false)
-		public boolean debug = false;		
+		public boolean debug = false;
+		
+		@Option(name="--downloadExifData", required=false)
+		public boolean downloadExifData = false;
 	}
 
 	private static File getToplevelXmlFilename(File photosBaseDirectory) {
@@ -197,6 +200,7 @@ public class FlickrDownload {
 					configuration.buddyIconFilename);
 		createdToplevelFiles.add(configuration.buddyIconFilename.getName());
 
+		configuration.downloadExifData = values.downloadExifData;
 		configuration.partialDownloads = values.partial;
 		configuration.addExtensionToUnknownFiles = values.addExtensionToUnknownFiles;
 

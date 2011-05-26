@@ -29,6 +29,7 @@ public class Configuration {
 	public File photosBaseDirectory;
 	public File authDirectory;
 	public File buddyIconFilename;
+	public boolean downloadExifData = false;
 	public boolean downloadCollectionIcons = false;
 	public boolean alwaysDownloadBuddyIcon = false;
 	public boolean partialDownloads = false;
