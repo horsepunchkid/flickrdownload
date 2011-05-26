@@ -126,7 +126,11 @@ public class XmlUtils {
 			transformer.setParameter("PHOTOS_BASE_DIR", configuration.photosBaseDirectory.getAbsolutePath());
 			transformer.transform(new StreamSource(xmlFile), new StreamResult(output));
 			output.flush();
-		} finally {
+		}
+		catch (TransformerException e) {
+			throw new TransformerException(String.format("Error transforming %s to %s using stylesheet %s", xmlFile, outputFile, xsltStylesheet), e);
+		}
+		finally {
 			if (xslt != null)
 				xslt.close();
 			if (xmlInput != null)
