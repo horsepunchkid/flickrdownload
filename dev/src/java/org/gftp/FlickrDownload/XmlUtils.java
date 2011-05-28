@@ -37,7 +37,8 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 
 public class XmlUtils {
-	private static DateFormat rawDateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss Z");
+	public static String RAW_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss Z";
+	public static DateFormat rawDateFormatter = new SimpleDateFormat(RAW_DATE_FORMAT);
 	private static DateFormat prettyDateFormatter = new SimpleDateFormat("MMMM d, yyyy");
 
 	public static Element createUserXml(Configuration configuration) {

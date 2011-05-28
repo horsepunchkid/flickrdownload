@@ -81,12 +81,15 @@ public class FlickrDownload {
 		File toplevelXmlFilename = getToplevelXmlFilename(configuration.photosBaseDirectory);
 		Logger.getLogger(FlickrDownload.class).info("Creating XML file " + toplevelXmlFilename.getAbsolutePath());
 
+		MediaIndexer indexer = new XmlMediaIndexer(configuration);
 		Element toplevel = new Element("flickr")
 			.addContent(XmlUtils.createApplicationXml())
 			.addContent(XmlUtils.createUserXml(configuration))
 			.addContent(collections.createTopLevelXml())
 			.addContent(sets.createTopLevelXml())
-			.addContent(new Stats(sets).createStatsXml());
+			.addContent(new Stats(sets).createStatsXml(indexer));
+
+		createdFiles.addAll(indexer.writeIndex());
 
 		XmlUtils.outputXmlFile(toplevelXmlFilename, toplevel);
 		createdFiles.add(toplevelXmlFilename.getName());

@@ -30,7 +30,7 @@ public class Stats {
 		this.sets = sets;
 	}
 
-	public Element createStatsXml() throws FlickrException, IOException, SAXException, JDOMException {
+	public Element createStatsXml(MediaIndexer mediaIndexer) throws FlickrException, IOException, SAXException, JDOMException {
 		Map<String, MediaStats> allStats = new HashMap<String, MediaStats>();
 
 		for (AbstractSet set : this.sets.getSets()) {
@@ -38,7 +38,7 @@ public class Stats {
 			if (!setXmlFilename.exists())
 				continue;
 
-			processXmlFile(setXmlFilename, allStats);
+			processXmlFile(setXmlFilename, allStats, set.getSetId(), mediaIndexer);
 		}
 
 		return generateStatsXml(allStats);
@@ -96,7 +96,7 @@ public class Stats {
 		}
 	}
 
-	public static void processXmlFile(File setXmlFilename, Map<String, MediaStats> allStats) throws JDOMException, IOException {
+	public static void processXmlFile(File setXmlFilename, Map<String, MediaStats> allStats, String setId, MediaIndexer mediaIndexer) throws JDOMException, IOException {
 		if (!setXmlFilename.exists())
 			return;
 
@@ -114,6 +114,8 @@ public class Stats {
 			Logger.getLogger(Stats.class).info(String.format("Gathering statistics from file %s", setXmlFilename.getAbsolutePath()));
 
 			for (Element mediaElement : (List<Element>) root.getChildren("media")) {
+				mediaIndexer.addToIndex(setId, mediaElement);
+
 				String type = mediaElement.getAttributeValue("type");					
 				if (!allStats.containsKey(type))
 					allStats.put(type, new MediaStats());
@@ -248,10 +250,10 @@ public class Stats {
 		return topLevelStats;
 	}
 
-	public static int getMediaCount(File setXmlFilename) throws IOException, JDOMException {
+	public static int getMediaCount(File setXmlFilename, String setId) throws IOException, JDOMException {
 		int total = 0;
 		Map<String, MediaStats> allStats = new HashMap<String, MediaStats>();
-		processXmlFile(setXmlFilename, allStats);
+		processXmlFile(setXmlFilename, allStats, setId, NoopMediaIndexer.INSTANCE);
 		for (String key : allStats.keySet()) {
 			total += allStats.get(key).totalPhotos;
 		}

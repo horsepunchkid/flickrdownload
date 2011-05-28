@@ -98,7 +98,7 @@ public class Sets {
 			setDir.mkdir();
 
 			File setXmlFilename = set.getSetXmlFilename();
-			if (Sets.this.configuration.partialDownloads && setXmlFilename.exists() && Stats.getMediaCount(setXmlFilename) == set.getMediaCount()) {
+			if (Sets.this.configuration.partialDownloads && setXmlFilename.exists() && Stats.getMediaCount(setXmlFilename, set.getSetId()) == set.getMediaCount()) {
 				Logger.getLogger(getClass()).info(String.format("Skipping the download of set %s - %s", set.getSetId(), set.getSetTitle()));
 				continue;
 			}

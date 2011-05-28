@@ -72,7 +72,7 @@ public abstract class AbstractSet {
 
 	private Element createStatsXml() throws JDOMException, IOException {
 		Map<String, MediaStats> allStats = new HashMap<String, MediaStats>();
-		Stats.processXmlFile(getSetXmlFilename(), allStats);
+		Stats.processXmlFile(getSetXmlFilename(), allStats, getSetId(), NoopMediaIndexer.INSTANCE);
 		return Stats.generateStatsXml(allStats);
 	}
 
