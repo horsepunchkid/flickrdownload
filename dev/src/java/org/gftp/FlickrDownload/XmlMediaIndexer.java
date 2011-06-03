@@ -91,8 +91,13 @@ public class XmlMediaIndexer implements MediaIndexer {
 		}
 		parent.addContent(allMedia);
 
-		Element byDateTaken = new Element("by_date_taken");
+		Element byDateTaken = new Element("by_date_taken");		
+		SortedMap<String, SortedSet<DateGroup>> yearMonths = new TreeMap<String, SortedSet<DateGroup>>();
 		for (DateGroup date : this.takenByDate.keySet()) {
+			if (!yearMonths.containsKey(date.year))
+				yearMonths.put(date.year, new TreeSet<DateGroup>());
+			yearMonths.get(date.year).add(date);
+
 			Element dateEle = new Element("date")
 								.setAttribute("raw", date.rawDate)
 								.setAttribute("year", date.year)
@@ -104,6 +109,19 @@ public class XmlMediaIndexer implements MediaIndexer {
 			}
 			byDateTaken.addContent(dateEle);
 		}
+		
+		Element yearsEle = new Element("years");
+		for (String year : yearMonths.keySet()) {
+			Element yearEle = new Element("year").setAttribute("value", year);
+			for (DateGroup date : yearMonths.get(year)) {
+				yearEle.addContent(new Element("month")
+					.setAttribute("raw", date.rawDate)
+					.setAttribute("year", date.year)
+					.setAttribute("month", date.month));
+			}
+			yearsEle.addContent(yearEle);
+		}
+		byDateTaken.addContent(yearsEle);
 		parent.addContent(byDateTaken);
 
 		return parent;
