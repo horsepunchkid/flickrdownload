@@ -175,5 +175,12 @@ background: #cccccc;
 font-weight: bold;
 background: #dddddd;
 }
-
-
+.year_col {
+padding: 1ex;
+font-weight: bold;
+vertical-align: top;
+}
+.month_col {
+padding: 1ex;
+vertical-align: top;
+}
