@@ -184,3 +184,11 @@ vertical-align: top;
 padding: 1ex;
 vertical-align: top;
 }
+.archive {
+margin-left: 55px;
+}
+.archive_current_month {
+text-align: center;
+font-weight: bold;
+font-size: 120%;
+}

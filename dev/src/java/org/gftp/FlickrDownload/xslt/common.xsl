@@ -25,6 +25,7 @@
         <span class="header_breadcrumb"><a href="{$baseDir}/sets.html">Sets</a></span>
         <xsl:call-template name="show_extra_breadcrumbs"/>
         <span class="header_breadcrumb"><a href="{$baseDir}/stats.html">Stats</a></span>
+        <span class="header_breadcrumb"><a href="{$baseDir}/archive.html">Archive</a></span>
       </span>
     </span>
   </div>

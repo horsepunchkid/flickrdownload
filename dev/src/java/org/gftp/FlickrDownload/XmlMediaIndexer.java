@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -18,13 +18,17 @@ import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import javax.xml.transform.TransformerException;
+
 import org.apache.log4j.Logger;
+import org.gftp.FlickrDownload.XmlUtils.XsltParameter;
 import org.jdom.Attribute;
 import org.jdom.Element;
 
 public class XmlMediaIndexer implements MediaIndexer {
 	private static SimpleDateFormat rawDateInput = new SimpleDateFormat(XmlUtils.RAW_DATE_FORMAT);
 	private static final String INDEX_XML_FILENAME = "index.xml";
+	private static final String INDEX_HTML_FILENAME = "archive.html";
 
 	private Map<String, MainPhotoIndexEntry> mainEntries = new HashMap<String, MainPhotoIndexEntry>();
 	private SortedMap<DateGroup, SortedSet<MediaEntryByDate>> takenByDate = new TreeMap<DateGroup, SortedSet<MediaEntryByDate>>();
@@ -127,10 +131,26 @@ public class XmlMediaIndexer implements MediaIndexer {
 		return parent;
 	}
 
-	public Collection<String> writeIndex() throws IOException {
-		File outfile = new File(this.configuration.photosBaseDirectory, "index.xml");
-		XmlUtils.outputXmlFile(outfile, generateStatsXml());
-		return Arrays.asList(INDEX_XML_FILENAME);
+	public Collection<String> writeIndex() throws IOException, TransformerException {
+		Collection<String> outputFiles = new ArrayList<String>();
+
+		File xmlFile = new File(this.configuration.photosBaseDirectory, INDEX_XML_FILENAME);
+		XmlUtils.outputXmlFile(xmlFile, generateStatsXml());
+		outputFiles.add(INDEX_XML_FILENAME);
+		
+		XmlUtils.performXsltTransformation(this.configuration, "date_taken_index.xsl", xmlFile,
+				new File(this.configuration.photosBaseDirectory, INDEX_HTML_FILENAME));
+		outputFiles.add(INDEX_HTML_FILENAME);
+
+		for (DateGroup date : this.takenByDate.keySet()) {
+			String baseName = String.format("photos-taken-on-%s.html", date.rawDate);
+			XmlUtils.performXsltTransformation(this.configuration, "date_taken_detail.xsl", xmlFile,
+					new File(this.configuration.photosBaseDirectory, baseName),
+					new XsltParameter("date", date.rawDate));
+			outputFiles.add(baseName);
+		}
+
+		return outputFiles;
 	}
 	
 	protected class MainPhotoIndexEntry {
