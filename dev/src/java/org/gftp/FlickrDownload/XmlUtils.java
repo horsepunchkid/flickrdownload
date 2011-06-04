@@ -31,6 +31,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -71,6 +72,7 @@ public class XmlUtils {
 	}
 
 	public static void outputXmlFile(File dest, Element root) throws IOException {
+		Logger.getLogger(XmlUtils.class).info(String.format("Writing file %s", dest));
 		PrintWriter out = new PrintWriter(dest);
 		XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
 		outputter.output(new Document(root), out);
@@ -109,7 +111,9 @@ public class XmlUtils {
 		return createMediaElement(elementName, localFilename, displayLocalFilename, remoteUrl);
 	}
 
-	public static void performXsltTransformation(final Configuration configuration, String xsltStylesheet, File xmlFile, File outputFile) throws IOException, TransformerException {
+	public static void performXsltTransformation(final Configuration configuration, String xsltStylesheet, File xmlFile, File outputFile, XsltParameter... parameters) throws IOException, TransformerException {
+		Logger.getLogger(XmlUtils.class).info(String.format("Writing file %s", outputFile));
+
 		InputStream xslt = null;
 		InputStream xmlInput = null;
 		PrintWriter output = null;
@@ -125,6 +129,9 @@ public class XmlUtils {
 			});
 			Transformer transformer = factory.newTransformer(new StreamSource(xslt));
 			transformer.setParameter("PHOTOS_BASE_DIR", configuration.photosBaseDirectory.getAbsolutePath());
+			for (XsltParameter param : parameters) {
+				transformer.setParameter(param.key, param.value);
+			}
 			transformer.transform(new StreamSource(xmlFile), new StreamResult(output));
 			output.flush();
 		}
@@ -138,6 +145,16 @@ public class XmlUtils {
 				xmlInput.close();
 			if (output != null)
 				output.close();
+		}
+	}
+
+	public static class XsltParameter {
+		protected String key;
+		protected String value;
+
+		public XsltParameter(String key, String value) {
+			this.key = key;
+			this.value = value;
 		}
 	}
 }
