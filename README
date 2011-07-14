@@ -53,7 +53,7 @@ How to run
    several other files that end in jar. Type
    'java -jar FlickrDownload.jar' and you should see something like this:
 
-FlickrDownload 0.4 - Copyright(C) 2007,2010 Brian Masney <masneyb@gmail.com>.
+FlickrDownload 0.6 - Copyright(C) 2007,2010 Brian Masney <masneyb@gmail.com>.
 If you have any questions, comments, or suggestions about this program, please
 feel free to email them to me. You can always find out the latest news about
 FlickrDownload from my website at http://code.google.com/p/flickrdownload/.
@@ -64,13 +64,11 @@ software, and you are welcome to redistribute it under certain conditions;
 for details, see COPYING file.
 
 Option "--photosDir" is required
-usage: FlickrDownload  [--addExtensionToUnknownFiles VAL] [--authDir VAL] 
-          [--authUsername VAL] [--debug] [--limitToSet VAL ...] [--partial] 
-          --photosDir VAL [--photosUsername VAL]
+usage: FlickrDownload  [--addExtensionToUnknownFiles VAL] [--authDir VAL] [--authUsername VAL] [--debug] [--downloadExifData] [--limitToSet VAL ...] [--partial] --photosDir VAL [--photosUsername VAL]
 
 I typically run it like this:
 
-java -jar FlickrDownload.jar --partial --photosDir /path/to/flickr/backup
+java -Xmx2048m -jar /home/masneyb/src/flickrdownload/build/FlickrDownload.jar --partial --photosDir /path/to/flickr/backup --addExtensionToUnknownFiles todelete --downloadExifData
 
 You will have to specify the --authUsername option the first time that you run
 the program to authenticate FlickrDownload with your flickr account. The
