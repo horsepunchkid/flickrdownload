@@ -148,6 +148,7 @@ public abstract class AbstractSet {
 
             String smallSquareBaseFilename = String.format("%s_thumb_sq.jpg", photo.getId());
             String mediumBaseFilename = String.format("%s_med.jpg", photo.getId());
+            String largeBaseFilename = String.format("%s_large.jpg", photo.getId());
 
     		this.expectedFiles.add(String.format("%s.html", photo.getId()));
     		this.expectedFiles.add(smallSquareBaseFilename);
@@ -177,8 +178,12 @@ public abstract class AbstractSet {
             			photo.getMediumUrl(),
             			false)
             				.setAttribute("type", MEDIUM_PHOTO_DESCRIPTION))
-    			.addContent(XmlUtils.createMediaElement("image", null, null, photo.getLargeUrl())
-    					.setAttribute("type", LARGE_PHOTO_DESCRIPTION))
+            	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
+            			new File(getSetDirectory(), largeBaseFilename), 
+            			largeBaseFilename,
+            			photo.getLargeUrl(),
+            			false)
+            				.setAttribute("type", LARGE_PHOTO_DESCRIPTION))
             	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
             			new File(getSetDirectory(), originalBaseFilename), 
             			originalBaseFilename,
