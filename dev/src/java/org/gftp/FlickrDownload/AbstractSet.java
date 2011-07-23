@@ -153,6 +153,7 @@ public abstract class AbstractSet {
     		this.expectedFiles.add(String.format("%s.html", photo.getId()));
     		this.expectedFiles.add(smallSquareBaseFilename);
     		this.expectedFiles.add(mediumBaseFilename);
+    		this.expectedFiles.add(largeBaseFilename);
     		this.expectedFiles.add(originalBaseFilename);
 
             GeoData geoData = photo.getGeoData();
