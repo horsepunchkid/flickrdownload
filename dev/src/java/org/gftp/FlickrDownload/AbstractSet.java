@@ -233,11 +233,25 @@ public abstract class AbstractSet {
 	}
 
 	// FIXME - move this into the flickrj library
-	private String getOriginalVideoUrl(Flickr flickr, String photoId) throws IOException, FlickrException, SAXException {
+	public static String getOriginalVideoUrl(Flickr flickr, String photoId) throws IOException, FlickrException, SAXException {
+		String origUrl = null;
+		String hdUrl = null;
+		String siteUrl = null;
 		for (Size size : (Collection<Size>) flickr.getPhotosInterface().getSizes(photoId, true)) {
 			if (size.getSource().contains("/play/orig"))
-				return size.getSource();
+				origUrl = size.getSource();
+			else if (size.getSource().contains("/play/hd"))
+				hdUrl = size.getSource();
+			else if (size.getSource().contains("/play/site"))
+				siteUrl = size.getSource();
 		}
-		return null;
+		if (origUrl != null)
+			return origUrl;
+		else if (hdUrl != null)
+			return hdUrl;
+		else if (siteUrl != null)
+			return siteUrl;
+		else
+			return null;
 	}
 }
