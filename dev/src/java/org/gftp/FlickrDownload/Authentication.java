@@ -38,9 +38,6 @@ public class Authentication {
 	
 	public static Auth getAuthToken(Flickr flickr, File authDirectory, String username) throws IOException, SAXException, FlickrException {
 		AuthStore authStore = new FileAuthStore(authDirectory);
-		if (authStore == null)
-			return null;
-
 		Auth auth = authStore.retrieve(flickr.getPeopleInterface().findByUsername(username).getId());
 		if (auth != null) {
 			RequestContext.getRequestContext().setAuth(auth);
