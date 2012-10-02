@@ -130,9 +130,7 @@ public abstract class AbstractSet {
             String originalBaseFilename;
             if (photo.getMedia().equals("video")) {
             	originalUrl = getOriginalVideoUrl(flickr, photo.getId());
-            	originalBaseFilename = String.format("%s_orig.%s", 
-            			photo.getId(),
-            			IOUtils.getExtension(IOUtils.getRemoteFilename(originalUrl)));
+            	originalBaseFilename = String.format("%s_orig.%s", photo.getId(), IOUtils.getVideoExtension(originalUrl));
             }
             else {
             	try {
@@ -232,8 +230,7 @@ public abstract class AbstractSet {
 		return setXml;
 	}
 
-	// FIXME - move this into the flickrj library
-	public static String getOriginalVideoUrl(Flickr flickr, String photoId) throws IOException, FlickrException, SAXException {
+	private static String getOriginalVideoUrl(Flickr flickr, String photoId) throws IOException, FlickrException, SAXException {
 		String origUrl = null;
 		String hdUrl = null;
 		String siteUrl = null;

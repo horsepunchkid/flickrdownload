@@ -81,25 +81,33 @@ public class IOUtils {
 
         HttpClient client = new HttpClient();
         GetMethod get = new GetMethod(url);
-        client.executeMethod(get);
-        copyToFileAndCloseStreams(get.getResponseBodyAsStream(), tmpFile);
-
-        tmpFile.renameTo(destFile);
+        int code = client.executeMethod(get);
+        if (code >= 200 && code < 300) {
+        	copyToFileAndCloseStreams(get.getResponseBodyAsStream(), tmpFile);
+            tmpFile.renameTo(destFile);
+        }
+        else
+        	Logger.getLogger(IOUtils.class).fatal("Got HTTP response code " + code + " when trying to download " + url);
 	}
 
-	public static String getRemoteFilename(String url) throws IOException, HTTPException {
+	private static String getRemoteFilename(String url) throws IOException, HTTPException {
         HttpClient client = new HttpClient();
         HeadMethod get = new HeadMethod(url);
-        client.executeMethod(get);
-
-        Header disposition = get.getResponseHeader("Content-Disposition");
-        if (disposition != null)
-        	return disposition.getValue().replace("attachment; filename=", "");
-
+        int code = client.executeMethod(get);
+        
+        if (code >= 200 && code < 400) {
+            Header disposition = get.getResponseHeader("Content-Disposition");
+            if (disposition != null)
+            	return disposition.getValue().replace("attachment; filename=", "");
+        }
+       	Logger.getLogger(IOUtils.class).fatal("Got HTTP response code " + code + " when trying to download " + url + ". Returning null.");
         return null;
 	}
 
-	public static String getExtension(String filename) {
+	public static String getVideoExtension(String url) throws IOException, HTTPException {
+		String filename = getRemoteFilename(url);
+		if (filename == null || filename.endsWith("."))
+			return "mp4"; // FIXME
 		return filename.substring(filename.lastIndexOf(".") + 1);
 	}
 	
