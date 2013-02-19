@@ -1,3 +1,6 @@
+* Changes from FlickrDownload 0.6 to 0.7
+  - Fixes for downloading HD videos
+
 * Changes from FlickrDownload 0.5 to 0.6
   - Added ability to download photos that are not in a set
   - Minor code cleanups
