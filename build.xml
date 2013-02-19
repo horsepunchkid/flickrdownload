@@ -6,7 +6,7 @@
     <property name="source" value="1.5"/>
 
     <property name="title" value="FlickrDownload"/>
-    <property name="version" value="0.6"/>
+    <property name="version" value="0.7"/>
     <property name="vendor" value="Brian Masney"/>
 
     <path id="FlickrDownload.classpath">
