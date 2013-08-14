@@ -1,5 +1,5 @@
 FlickrDownload
-http://code.google.com/p/flickrdownload/
+http://www.onstation.org/flickrdownload/
 
 
 Introduction
@@ -32,8 +32,11 @@ communicate with Flickr.
 Install from source instructions
 --------------------------------
 
-1) Go to http://code.google.com/p/flickrdownload/source/checkout for
-   instructions on how to check out the latest source code from subversion.
+Note: Compiled versions of FlickrDownload are available at
+http://www.onstation.org/flickrdownload/.
+
+1) Go to https://github.com/masneyb/flickrdownload for instructions on how to
+   check out the latest source code from git.
 
 2) You will need to have Java installed on your computer. Type 'java -version'
    to see if it is installed. If not, Ubuntu GNU/Linux users can run
@@ -56,7 +59,7 @@ How to run
 FlickrDownload 0.6 - Copyright(C) 2007,2010 Brian Masney <masneyb@onstation.org>.
 If you have any questions, comments, or suggestions about this program, please
 feel free to email them to me. You can always find out the latest news about
-FlickrDownload from my website at http://code.google.com/p/flickrdownload/.
+FlickrDownload from my website at http://www.onstation.org/flickrdownload/.
 
 FlickrDownload is distributed under the terms of the GPLv3 and comes with
 ABSOLUTELY NO WARRANTY; for details, see the COPYING file. This is free
