@@ -2,7 +2,7 @@
 <xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
 
 <!--
-  FlickrDownload - Copyright(C) 2010 Brian Masney <masneyb@gmail.com>.
+  FlickrDownload - Copyright(C) 2010 Brian Masney <masneyb@onstation.org>.
   If you have any questions, comments, or suggestions about this program, please
   feel free to email them to me. You can always find out the latest news about
   FlickrDownload from my website at http://code.google.com/p/flickrdownload/

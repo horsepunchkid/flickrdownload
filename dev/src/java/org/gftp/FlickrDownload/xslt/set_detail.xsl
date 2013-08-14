@@ -8,7 +8,7 @@
 <xsl:param name="PHOTOS_BASE_DIR"/>
 
 <!--
-  FlickrDownload - Copyright(C) 2007,2010 Brian Masney <masneyb@gmail.com>.
+  FlickrDownload - Copyright(C) 2007,2010 Brian Masney <masneyb@onstation.org>.
   If you have any questions, comments, or suggestions about this program, please
   feel free to email them to me. You can always find out the latest news about
   FlickrDownload from my website at http://code.google.com/p/flickrdownload/

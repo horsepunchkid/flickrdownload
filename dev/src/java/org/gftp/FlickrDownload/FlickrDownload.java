@@ -1,5 +1,5 @@
 /*
-  FlickrDownload - Copyright(C) 2010-2011 Brian Masney <masneyb@gmail.com>.
+  FlickrDownload - Copyright(C) 2010-2011 Brian Masney <masneyb@onstation.org>.
   If you have any questions, comments, or suggestions about this program, please
   feel free to email them to me. You can always find out the latest news about
   FlickrDownload from my website at http://code.google.com/p/flickrdownload/
@@ -145,7 +145,7 @@ public class FlickrDownload {
 	}
 
 	public static void main(String[] args) throws Exception {
-		System.out.println(String.format("%s %s - Copyright(C) 2007,2010-2011 Brian Masney <masneyb@gmail.com>.", 
+		System.out.println(String.format("%s %s - Copyright(C) 2007,2010-2011 Brian Masney <masneyb@onstation.org>.", 
 				getApplicationName(), getApplicationVersion()));
 		System.out.println("If you have any questions, comments, or suggestions about this program, please");
 		System.out.println("feel free to email them to me. You can always find out the latest news about");

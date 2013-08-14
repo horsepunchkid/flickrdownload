@@ -8,7 +8,7 @@
 <xsl:param name="date"/>
 
 <!--
-  FlickrDownload - Copyright(C) 2011 Brian Masney <masneyb@gmail.com>.
+  FlickrDownload - Copyright(C) 2011 Brian Masney <masneyb@onstation.org>.
   If you have any questions, comments, or suggestions about this program, please
   feel free to email them to me. You can always find out the latest news about
   FlickrDownload from my website at http://code.google.com/p/flickrdownload/
