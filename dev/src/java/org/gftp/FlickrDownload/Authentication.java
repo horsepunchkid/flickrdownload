@@ -53,11 +53,11 @@ public class Authentication {
 		Token accessToken = authInterface.getRequestToken();
 
 		String url = authInterface.getAuthorizationUrl(accessToken, Permission.READ);
-		System.out.println("Please visit the following URL:");
+		System.out.println("Please visit the following URL to get your authorization token:");
 		System.out.println();
 		System.out.println(url);
 		System.out.println();
-		System.out.println("Paste in the token it gives you: ");
+		System.out.print("Enter your token: ");
 		String tokenKey = new Scanner(System.in).nextLine();
 
 		Token requestToken = authInterface.getAccessToken(accessToken, new Verifier(tokenKey));
