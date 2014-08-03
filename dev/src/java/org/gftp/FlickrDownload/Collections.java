@@ -48,15 +48,21 @@ public class Collections {
     				.setAttribute("title", set.getTitle()));
     		}
 
-    		File largeFile = new File(iconsDir, collection.getId() + "-large.jpg");
-    		File smallFile = new File(iconsDir, collection.getId() + "-small.jpg");
+            String iconLarge = collection.getIconLarge();
+            String iconSmall = collection.getIconSmall();
+
+            if(!iconLarge.matches("^https://.*")) iconLarge = "https://www.flickr.com" + iconLarge;
+            if(!iconSmall.matches("^https://.*")) iconSmall = "https://www.flickr.com" + iconSmall;
+
+    		File largeFile = new File(iconsDir, collection.getId() + "-large." + (iconLarge.matches(".*jpg$") ? "jpg" : "gif"));
+    		File smallFile = new File(iconsDir, collection.getId() + "-small." + (iconSmall.matches(".*jpg$") ? "jpg" : "gif"));
 
     		allCollections.addContent(new Element("collection")
     			.addContent(new Element("id").setText(collection.getId()))
     			.addContent(new Element("title").setText(collection.getTitle()))
     			.addContent(new Element("description").setText(collection.getDescription()))
-    			.addContent(XmlUtils.downloadMediaAndCreateElement("iconLarge", largeFile, iconsDir.getName() + File.separator + largeFile.getName(), collection.getIconLarge(), this.configuration.downloadCollectionIcons))
-    			.addContent(XmlUtils.downloadMediaAndCreateElement("iconSmall", smallFile, iconsDir.getName() + File.separator + smallFile.getName(), collection.getIconSmall(), this.configuration.downloadCollectionIcons))
+    			.addContent(XmlUtils.downloadMediaAndCreateElement("iconLarge", largeFile, iconsDir.getName() + File.separator + largeFile.getName(), iconLarge, this.configuration.downloadCollectionIcons))
+    			.addContent(XmlUtils.downloadMediaAndCreateElement("iconSmall", smallFile, iconsDir.getName() + File.separator + smallFile.getName(), iconSmall, this.configuration.downloadCollectionIcons))
     			.addContent(setsEle));
     	}
 
