@@ -79,12 +79,14 @@ public class XmlMediaIndexer implements MediaIndexer {
 
 	private Element cloneXml(Element origEle) {
 		Element newEle = new Element(origEle.getName());
-		for (Attribute attr : (List<Attribute>) origEle.getAttributes()) {
+		for (Object attrTemp : (List<?>) origEle.getAttributes()) {
+            Attribute attr = (Attribute) attrTemp; // because jdom doesn't use generics
 			newEle.setAttribute(attr.getName(), attr.getValue());
 		}
 		if (origEle.getText() != null)
 			newEle.setText(origEle.getText());
-		for (Element child : (List<Element>) origEle.getChildren()) { 
+		for (Object childTemp : (List<?>) origEle.getChildren()) { 
+            Element child = (Element) childTemp;
 			newEle.addContent(cloneXml(child));
 		}
 		return newEle;
