@@ -199,7 +199,7 @@ public class FlickrDownload {
 
 		configuration.buddyIconFilename = new File(configuration.photosBaseDirectory, configuration.photosUser.getRealName() + ".jpg");
 		if (configuration.alwaysDownloadBuddyIcon || !configuration.buddyIconFilename.exists())
-			IOUtils.downloadUrl(configuration.photosUser.getBuddyIconUrl(), 
+			IOUtils.downloadUrl(configuration.photosUser.getSecureBuddyIconUrl(), 
 					configuration.buddyIconFilename);
 		createdToplevelFiles.add(configuration.buddyIconFilename.getName());
 
