@@ -18,10 +18,10 @@ import org.apache.log4j.Logger;
 import org.jdom.Element;
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.photos.Photo;
-import com.aetrion.flickr.photos.PhotoList;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.photos.Photo;
+import com.flickr4java.flickr.photos.PhotoList;
 
 public class PhotosNotInASet extends AbstractSet {
 	private LinkedHashSet<BasePhoto> photoIds = new LinkedHashSet<BasePhoto>();

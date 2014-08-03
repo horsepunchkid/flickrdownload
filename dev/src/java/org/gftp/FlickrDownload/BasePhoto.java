@@ -11,7 +11,7 @@
 
 package org.gftp.FlickrDownload;
 
-import com.aetrion.flickr.photos.Photo;
+import com.flickr4java.flickr.photos.Photo;
 
 public class BasePhoto {
 	private String photoId;

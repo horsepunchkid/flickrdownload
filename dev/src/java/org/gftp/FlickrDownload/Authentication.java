@@ -14,29 +14,34 @@ package org.gftp.FlickrDownload;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
 
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.REST;
-import com.aetrion.flickr.RequestContext;
-import com.aetrion.flickr.Response;
-import com.aetrion.flickr.auth.Auth;
-import com.aetrion.flickr.auth.Permission;
-import com.aetrion.flickr.util.AuthStore;
-import com.aetrion.flickr.util.FileAuthStore;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.REST;
+import com.flickr4java.flickr.RequestContext;
+import com.flickr4java.flickr.Response;
+import com.flickr4java.flickr.auth.Auth;
+import com.flickr4java.flickr.auth.AuthInterface;
+import com.flickr4java.flickr.auth.Permission;
+import com.flickr4java.flickr.util.AuthStore;
+import com.flickr4java.flickr.util.FileAuthStore;
+
+import org.scribe.model.Token;
+import org.scribe.model.Verifier;
 
 public class Authentication {
 	public static Flickr getFlickr() throws ParserConfigurationException {
 		return new Flickr("16c1a6a31f28e670500d02f6b13935b1", "0fa4d39da5eab415", new RESTRetryTransport());
 	}
 	
-	public static Auth getAuthToken(Flickr flickr, File authDirectory, String username) throws IOException, SAXException, FlickrException {
+	public static Auth authorize(Flickr flickr, File authDirectory, String username) throws IOException, SAXException, FlickrException {
 		AuthStore authStore = new FileAuthStore(authDirectory);
 		Auth auth = authStore.retrieve(flickr.getPeopleInterface().findByUsername(username).getId());
 		if (auth != null) {
@@ -44,19 +49,23 @@ public class Authentication {
 			return auth;
 		}
 
-		String frob = flickr.getAuthInterface().getFrob();
-		URL authUrl = flickr.getAuthInterface().buildAuthenticationUrl(Permission.READ, frob);
+		AuthInterface authInterface = flickr.getAuthInterface();
+		Token accessToken = authInterface.getRequestToken();
+
+		String url = authInterface.getAuthorizationUrl(accessToken, Permission.READ);
 		System.out.println("Please visit the following URL:");
 		System.out.println();
-		System.out.println(authUrl.toExternalForm());
+		System.out.println(url);
 		System.out.println();
-		System.out.println("Press enter once the application has been authorized.");
-		System.in.read();
+		System.out.println("Paste in the token it gives you: ");
+		String tokenKey = new Scanner(System.in).nextLine();
 
-		Auth token = flickr.getAuthInterface().getToken(frob);
-		authStore.store(token);
+		Token requestToken = authInterface.getAccessToken(accessToken, new Verifier(tokenKey));
+
+		auth = authInterface.checkToken(requestToken);
 		RequestContext.getRequestContext().setAuth(auth);
-		return token;
+		authStore.store(auth);
+		return auth;
 	}
 
 	protected static class RESTRetryTransport extends REST {
@@ -65,12 +74,12 @@ public class Authentication {
 		}
 
 		@Override
-	    public Response get(String path, List parameters) throws IOException, SAXException {
+	    public Response get(String path, Map<String, Object> parameters, String apiKey, String sharedSecret) {
 			while (true) {
 				try {
-					return super.get(path, parameters);
+					return super.get(path, parameters, apiKey, sharedSecret);
 				}
-				catch (IOException e) {
+				catch (Exception e) {
 					Logger.getLogger(getClass()).warn(String.format("Get operation failed, retrying: %s", e.getMessage()), e);
 					try {
 						Thread.sleep(4000);
@@ -83,12 +92,12 @@ public class Authentication {
 		}
 		
 		@Override
-	    public Response post(String path, List parameters, boolean multipart) throws IOException, SAXException {
+	    public Response post(String path, Map<String, Object> parameters, String apiKey, String sharedSecret, boolean multipart) {
 			while (true) {
 				try {
-					return super.post(path, parameters, multipart);
+					return super.post(path, parameters, apiKey, sharedSecret, multipart);
 				}
-				catch (IOException e) {
+				catch (Exception e) {
 					Logger.getLogger(getClass()).warn(String.format("Post operation failed, retrying: %s", e.getMessage()), e);
 					try {
 						Thread.sleep(4000);

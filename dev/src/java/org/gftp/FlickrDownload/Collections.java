@@ -17,11 +17,11 @@ import java.io.IOException;
 import org.jdom.Element;
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.photocollections.PhotoCollection;
-import com.aetrion.flickr.photocollections.PhotoCollectionsInterface;
-import com.aetrion.flickr.photosets.Photoset;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.collections.Collection;
+import com.flickr4java.flickr.collections.CollectionsInterface;
+import com.flickr4java.flickr.photosets.Photoset;
 
 public class Collections {
 	public static String COLLECTIONS_ICON_DIRECTORY = "collections";
@@ -34,15 +34,15 @@ public class Collections {
 	}
 	
 	public Element createTopLevelXml() throws FlickrException, SAXException, IOException {
-		PhotoCollectionsInterface collectionsInterface = this.flickr.getPhotoCollectionsInterface();
+		CollectionsInterface collectionsInterface = this.flickr.getCollectionsInterface();
 
 		File iconsDir = new File(this.configuration.photosBaseDirectory, COLLECTIONS_ICON_DIRECTORY);
 		iconsDir.mkdir();
 
 		Element allCollections = new Element("collections");
-    	for (PhotoCollection collection : collectionsInterface.getTree(this.configuration.photosUser.getId())) {
+    	for (Collection collection : collectionsInterface.getTree(null, null)) {
     		Element setsEle = new Element("sets");
-    		for (Photoset set : collection.getSets()) {
+    		for (Photoset set : collection.getPhotosets()) {
     			setsEle.addContent(new Element("set")
     				.setAttribute("id", set.getId())
     				.setAttribute("title", set.getTitle()));

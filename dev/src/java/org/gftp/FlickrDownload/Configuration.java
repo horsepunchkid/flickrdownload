@@ -18,10 +18,10 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.auth.Auth;
-import com.aetrion.flickr.people.User;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.auth.Auth;
+import com.flickr4java.flickr.people.User;
 
 public class Configuration {
 	public User authUser;
@@ -43,7 +43,7 @@ public class Configuration {
 		this.authDirectory = authDirectory != null ? authDirectory : photosBaseDirectory;
 		this.authDirectory.mkdirs();
 
-		this.auth = Authentication.getAuthToken(flickr, this.authDirectory, userName);
+		this.auth = Authentication.authorize(flickr, this.authDirectory, userName);
 		this.authUser = flickr.getPeopleInterface().getInfo(this.auth.getUser().getId());
 	}
 }

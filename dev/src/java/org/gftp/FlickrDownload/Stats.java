@@ -32,7 +32,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.FlickrException;
+import com.flickr4java.flickr.FlickrException;
 
 public class Stats {
 	private Sets sets;

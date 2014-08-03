@@ -29,10 +29,10 @@ import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.people.PeopleInterface;
-import com.aetrion.flickr.people.User;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.people.PeopleInterface;
+import com.flickr4java.flickr.people.User;
 
 public class FlickrDownload {
 	public static String ALL_COLLECTIONS_HTML_FILENAME = "collections.html";

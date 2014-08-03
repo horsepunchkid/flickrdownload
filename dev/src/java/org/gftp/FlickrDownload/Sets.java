@@ -25,9 +25,9 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.photosets.Photoset;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.photosets.Photoset;
 
 public class Sets {
 	public static String SET_THUMBNAIL_FILENAME = "index.html";
