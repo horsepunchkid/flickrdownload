@@ -98,7 +98,8 @@ public abstract class AbstractSet {
             	Tag tag = (Tag) tagObj;
             	tagEle.addContent(new Element("tag")
             		.setAttribute("author", tag.getAuthor())
-            		.setAttribute("value", tag.getValue()));
+            		.setAttribute("value", tag.getValue())
+                    .setAttribute("raw", tag.getRaw()));
             }
 
             Element notesEle = new Element("notes");
