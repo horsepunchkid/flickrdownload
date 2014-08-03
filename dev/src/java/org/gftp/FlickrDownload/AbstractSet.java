@@ -204,7 +204,7 @@ public abstract class AbstractSet {
             	.addContent(new Element("rotation").setText(String.valueOf(photo.getRotation())))
             	.addContent(new Element("geodata")
             		.setAttribute("placeId", photo.getPlaceId())
-            		.setAttribute("acuracy", geoData == null ? "" : String.valueOf(geoData.getAccuracy()))
+            		.setAttribute("accuracy", geoData == null ? "" : String.valueOf(geoData.getAccuracy()))
             		.setAttribute("latitude", geoData == null ? "" : String.valueOf(geoData.getLatitude()))
             		.setAttribute("longitude", geoData == null ? "" : String.valueOf(geoData.getLongitude())))
               	.addContent(tagEle)
