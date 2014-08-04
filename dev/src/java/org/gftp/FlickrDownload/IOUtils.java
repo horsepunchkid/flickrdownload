@@ -76,7 +76,7 @@ public class IOUtils {
 
 	public static void downloadUrl(String url, File destFile) throws IOException, HTTPException {
 		File tmpFile = new File(destFile.getAbsoluteFile() + ".tmp");
-		Logger.getLogger(IOUtils.class).info(String.format("Downloading URL %s to %s", url, tmpFile));
+		Logger.getLogger(IOUtils.class).debug(String.format("Downloading URL %s to %s", url, tmpFile));
 
 		tmpFile.getParentFile().mkdirs();
 
