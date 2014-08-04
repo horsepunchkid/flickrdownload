@@ -43,7 +43,7 @@ public class Set extends AbstractSet {
 			for (int i = 0; i < photos.size(); i++) {
 				retrievedPhotos++;
 				Photo photo = (Photo) photos.get(i);
-				processPhoto(new BasePhoto(photo), flickr, setXml);
+				processPhoto(photo, flickr, setXml);
 			}
 		} while (retrievedPhotos < totalPhotos);		
 	}

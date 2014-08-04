@@ -13,6 +13,7 @@ package org.gftp.FlickrDownload;
 
 import java.io.IOException;
 import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.log4j.Logger;
 import org.jdom.Element;
@@ -24,7 +25,7 @@ import com.flickr4java.flickr.photos.Photo;
 import com.flickr4java.flickr.photos.PhotoList;
 
 public class PhotosNotInASet extends AbstractSet {
-	private LinkedHashSet<BasePhoto> photoIds = new LinkedHashSet<BasePhoto>();
+	private Set<Photo> photoSet = new LinkedHashSet<Photo>();
 	private String primaryPhotoId;
 	private String primaryPhotoSmallSquareUrl;
 
@@ -46,24 +47,24 @@ public class PhotosNotInASet extends AbstractSet {
 					this.primaryPhotoSmallSquareUrl = photo.getSmallSquareUrl();
 				}
 
-				this.photoIds.add(new BasePhoto(photo));
+				this.photoSet.add(photo);
 			}
 			pageNum++;
 		}
 
-		Logger.getLogger(getClass()).info(String.format("There are a total of %s photos that are not in a set", this.photoIds.size()));
+		Logger.getLogger(getClass()).info(String.format("There are a total of %s photos that are not in a set", this.photoSet.size()));
 	}
 
 	@Override
 	protected void download(Flickr flickr, Element setXml) throws IOException, SAXException, FlickrException {
-		for (BasePhoto photo : this.photoIds) {
+		for (Photo photo : this.photoSet) {
 			processPhoto(photo, flickr, setXml);
 		}
 	}
 
 	@Override
 	protected int getMediaCount() {
-		return this.photoIds.size();
+		return this.photoSet.size();
 	}
 
 	@Override

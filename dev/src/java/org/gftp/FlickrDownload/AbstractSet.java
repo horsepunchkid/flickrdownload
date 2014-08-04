@@ -90,8 +90,10 @@ public abstract class AbstractSet {
 				.addContent(createStatsXml());
 	}
 
-	protected void processPhoto(BasePhoto basePhoto, Flickr flickr, Element setXml) throws IOException, SAXException, FlickrException {
-            Photo photo = flickr.getPhotosInterface().getPhoto(basePhoto.getPhotoId(), basePhoto.getSecret());
+	protected void processPhoto(Photo photo, Flickr flickr, Element setXml) throws IOException, SAXException, FlickrException {
+            // We probably have some of the photo data from a search
+            // result, but probably not all, so fetch it all.
+            photo = flickr.getPhotosInterface().getPhoto(photo.getId());
 
             Element tagEle = new Element("tags");
             for (Object tagObj : photo.getTags()) {
