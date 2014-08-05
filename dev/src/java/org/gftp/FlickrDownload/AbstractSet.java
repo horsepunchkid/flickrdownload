@@ -86,7 +86,7 @@ public abstract class AbstractSet {
 				.addContent(XmlUtils.downloadMediaAndCreateElement("thumbnailFile", 
 						new File(setDir, setThumbnailBaseFilename), 
 						getSetId() + File.separator + setThumbnailBaseFilename, 
-						getPrimaryPhotoSmallSquareUrl(), false))
+						getPrimaryPhotoSmallSquareUrl(), false, configuration))
 				.addContent(createStatsXml());
 	}
 
@@ -172,25 +172,29 @@ public abstract class AbstractSet {
             			new File(getSetDirectory(), smallSquareBaseFilename), 
             			smallSquareBaseFilename,
             			photo.getSmallSquareUrl(),
-            			false)
+            			false,
+                        configuration)
             				.setAttribute("type", SMALL_SQUARE_PHOTO_DESCRIPTION))
             	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
             			new File(getSetDirectory(), mediumBaseFilename), 
             			mediumBaseFilename,
             			photo.getMediumUrl(),
-            			false)
+            			false,
+                        configuration)
             				.setAttribute("type", MEDIUM_PHOTO_DESCRIPTION))
             	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
             			new File(getSetDirectory(), largeBaseFilename), 
             			largeBaseFilename,
             			photo.getLargeUrl(),
-            			false)
+            			false,
+                        configuration)
             				.setAttribute("type", LARGE_PHOTO_DESCRIPTION))
             	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
             			new File(getSetDirectory(), originalBaseFilename), 
             			originalBaseFilename,
             			originalUrl,
-            			false)
+            			false,
+                        configuration)
             				.setAttribute("type", ORIGINAL_MEDIA_DESCRIPTION)
             				.setAttribute("format", photo.getOriginalFormat()))
            		.addContent(new Element("dates")               		

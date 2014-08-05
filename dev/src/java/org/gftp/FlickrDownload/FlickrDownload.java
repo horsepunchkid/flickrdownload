@@ -69,6 +69,9 @@ public class FlickrDownload {
 		
 		@Option(name="--downloadExifData", required=false)
 		public boolean downloadExifData = false;
+
+		@Option(name="--onlyData", required=false)
+		public boolean onlyData = false;
 	}
 
 	private static File getToplevelXmlFilename(File photosBaseDirectory) {
@@ -197,8 +200,10 @@ public class FlickrDownload {
 			configuration.photosUser = pi.getInfo(pu.getId());
 		} 
 
+        configuration.onlyData = values.onlyData;
+
 		configuration.buddyIconFilename = new File(configuration.photosBaseDirectory, configuration.photosUser.getRealName() + ".jpg");
-		if (configuration.alwaysDownloadBuddyIcon || !configuration.buddyIconFilename.exists())
+		if (!configuration.onlyData && (configuration.alwaysDownloadBuddyIcon || !configuration.buddyIconFilename.exists()))
 			IOUtils.downloadUrl(configuration.photosUser.getSecureBuddyIconUrl(), 
 					configuration.buddyIconFilename);
 		createdToplevelFiles.add(configuration.buddyIconFilename.getName());

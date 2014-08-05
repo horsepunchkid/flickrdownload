@@ -104,8 +104,8 @@ public class XmlUtils {
 		return element;
 	}
 	
-	public static Element downloadMediaAndCreateElement(String elementName, File localFilename, String displayLocalFilename, String remoteUrl, boolean forceDownload) throws IOException {
-		if (remoteUrl != null && (!localFilename.exists() || forceDownload))
+	public static Element downloadMediaAndCreateElement(String elementName, File localFilename, String displayLocalFilename, String remoteUrl, boolean forceDownload, Configuration configuration) throws IOException {
+		if (!configuration.onlyData && remoteUrl != null && (!localFilename.exists() || forceDownload))
 			IOUtils.downloadUrl(remoteUrl, localFilename);
 
 		return createMediaElement(elementName, localFilename, displayLocalFilename, remoteUrl);

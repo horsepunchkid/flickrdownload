@@ -33,6 +33,7 @@ public class Configuration {
 	public boolean downloadCollectionIcons = false;
 	public boolean alwaysDownloadBuddyIcon = false;
 	public boolean partialDownloads = false;
+	public boolean onlyData = false;
 	public String addExtensionToUnknownFiles;
 	public Auth auth;
 	
