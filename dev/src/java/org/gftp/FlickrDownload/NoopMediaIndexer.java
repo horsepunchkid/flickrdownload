@@ -14,6 +14,7 @@ package org.gftp.FlickrDownload;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.ArrayList;
 
 import org.jdom.Element;
 
@@ -25,7 +26,8 @@ public class NoopMediaIndexer implements MediaIndexer {
 	}
 
 	public Collection<String> writeIndex() throws IOException {
-		return Collections.EMPTY_LIST;
+        Collection<String> empty = new ArrayList<String>();
+		return empty;
 	}
 
 }

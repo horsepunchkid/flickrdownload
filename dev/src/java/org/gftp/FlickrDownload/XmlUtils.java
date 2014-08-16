@@ -53,7 +53,7 @@ public class XmlUtils {
 			.addContent(createDateElement("flickrMemberSince", configuration.photosUser.getPhotosFirstDate()))
 			.addContent(createDateElement("mediaFirstTakenOn", configuration.photosUser.getPhotosFirstDateTaken()))
 			.addContent(createDateElement("photosSyncedOn", new Date()))
-			.addContent(createMediaElement("buddyIcon", configuration.buddyIconFilename, configuration.buddyIconFilename.getName(), configuration.photosUser.getBuddyIconUrl()))
+			.addContent(createMediaElement("buddyIcon", configuration.buddyIconFilename, configuration.buddyIconFilename.getName(), configuration.photosUser.getSecureBuddyIconUrl()))
 			.addContent(new Element("authUser")
 				.setAttribute("id", configuration.auth.getUser().getId())
 				.setAttribute("username", configuration.auth.getUser().getUsername())
@@ -104,8 +104,8 @@ public class XmlUtils {
 		return element;
 	}
 	
-	public static Element downloadMediaAndCreateElement(String elementName, File localFilename, String displayLocalFilename, String remoteUrl, boolean forceDownload) throws IOException {
-		if (remoteUrl != null && (!localFilename.exists() || forceDownload))
+	public static Element downloadMediaAndCreateElement(String elementName, File localFilename, String displayLocalFilename, String remoteUrl, boolean forceDownload, Configuration configuration) throws IOException {
+		if (!configuration.onlyData && remoteUrl != null && (!localFilename.exists() || forceDownload))
 			IOUtils.downloadUrl(remoteUrl, localFilename);
 
 		return createMediaElement(elementName, localFilename, displayLocalFilename, remoteUrl);

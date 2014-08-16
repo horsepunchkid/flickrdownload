@@ -17,9 +17,9 @@ import java.util.Map;
 
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.photos.licenses.License;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.photos.licenses.License;
 
 public class Licenses {
 	private static Map<String,String> licenses;

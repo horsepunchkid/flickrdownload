@@ -26,14 +26,14 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.photos.Exif;
-import com.aetrion.flickr.photos.GeoData;
-import com.aetrion.flickr.photos.Note;
-import com.aetrion.flickr.photos.Photo;
-import com.aetrion.flickr.photos.Size;
-import com.aetrion.flickr.tags.Tag;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.photos.Exif;
+import com.flickr4java.flickr.photos.GeoData;
+import com.flickr4java.flickr.photos.Note;
+import com.flickr4java.flickr.photos.Photo;
+import com.flickr4java.flickr.photos.Size;
+import com.flickr4java.flickr.tags.Tag;
 
 public abstract class AbstractSet {
 	public static String SET_XML_FILENAME = "photos.xml";
@@ -86,19 +86,22 @@ public abstract class AbstractSet {
 				.addContent(XmlUtils.downloadMediaAndCreateElement("thumbnailFile", 
 						new File(setDir, setThumbnailBaseFilename), 
 						getSetId() + File.separator + setThumbnailBaseFilename, 
-						getPrimaryPhotoSmallSquareUrl(), false))
+						getPrimaryPhotoSmallSquareUrl(), false, configuration))
 				.addContent(createStatsXml());
 	}
 
-	protected void processPhoto(BasePhoto basePhoto, Flickr flickr, Element setXml) throws IOException, SAXException, FlickrException {
-            Photo photo = flickr.getPhotosInterface().getPhoto(basePhoto.getPhotoId(), basePhoto.getSecret());
+	protected void processPhoto(Photo photo, Flickr flickr, Element setXml) throws IOException, SAXException, FlickrException {
+            // We probably have some of the photo data from a search
+            // result, but probably not all, so fetch it all.
+            photo = flickr.getPhotosInterface().getPhoto(photo.getId());
 
             Element tagEle = new Element("tags");
             for (Object tagObj : photo.getTags()) {
             	Tag tag = (Tag) tagObj;
             	tagEle.addContent(new Element("tag")
             		.setAttribute("author", tag.getAuthor())
-            		.setAttribute("value", tag.getValue()));
+            		.setAttribute("value", tag.getValue())
+                    .setAttribute("raw", tag.getRaw()));
             }
 
             Element notesEle = new Element("notes");
@@ -169,25 +172,29 @@ public abstract class AbstractSet {
             			new File(getSetDirectory(), smallSquareBaseFilename), 
             			smallSquareBaseFilename,
             			photo.getSmallSquareUrl(),
-            			false)
+            			false,
+                        configuration)
             				.setAttribute("type", SMALL_SQUARE_PHOTO_DESCRIPTION))
             	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
             			new File(getSetDirectory(), mediumBaseFilename), 
             			mediumBaseFilename,
             			photo.getMediumUrl(),
-            			false)
+            			false,
+                        configuration)
             				.setAttribute("type", MEDIUM_PHOTO_DESCRIPTION))
             	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
             			new File(getSetDirectory(), largeBaseFilename), 
             			largeBaseFilename,
             			photo.getLargeUrl(),
-            			false)
+            			false,
+                        configuration)
             				.setAttribute("type", LARGE_PHOTO_DESCRIPTION))
             	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
             			new File(getSetDirectory(), originalBaseFilename), 
             			originalBaseFilename,
             			originalUrl,
-            			false)
+            			false,
+                        configuration)
             				.setAttribute("type", ORIGINAL_MEDIA_DESCRIPTION)
             				.setAttribute("format", photo.getOriginalFormat()))
            		.addContent(new Element("dates")               		
@@ -204,7 +211,7 @@ public abstract class AbstractSet {
             	.addContent(new Element("rotation").setText(String.valueOf(photo.getRotation())))
             	.addContent(new Element("geodata")
             		.setAttribute("placeId", photo.getPlaceId())
-            		.setAttribute("acuracy", geoData == null ? "" : String.valueOf(geoData.getAccuracy()))
+            		.setAttribute("accuracy", geoData == null ? "" : String.valueOf(geoData.getAccuracy()))
             		.setAttribute("latitude", geoData == null ? "" : String.valueOf(geoData.getLatitude()))
             		.setAttribute("longitude", geoData == null ? "" : String.valueOf(geoData.getLongitude())))
               	.addContent(tagEle)

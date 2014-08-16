@@ -27,6 +27,7 @@ import org.apache.commons.httpclient.Header;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.HeadMethod;
+import org.apache.commons.httpclient.cookie.CookiePolicy;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 
@@ -75,12 +76,13 @@ public class IOUtils {
 
 	public static void downloadUrl(String url, File destFile) throws IOException, HTTPException {
 		File tmpFile = new File(destFile.getAbsoluteFile() + ".tmp");
-		Logger.getLogger(IOUtils.class).info(String.format("Downloading URL %s to %s", url, tmpFile));
+		Logger.getLogger(IOUtils.class).debug(String.format("Downloading URL %s to %s", url, tmpFile));
 
 		tmpFile.getParentFile().mkdirs();
 
         HttpClient client = new HttpClient();
         GetMethod get = new GetMethod(url);
+        get.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
         int code = client.executeMethod(get);
         if (code >= 200 && code < 300) {
         	copyToFileAndCloseStreams(get.getResponseBodyAsStream(), tmpFile);
@@ -93,6 +95,7 @@ public class IOUtils {
 	private static String getRemoteFilename(String url) throws IOException, HTTPException {
         HttpClient client = new HttpClient();
         HeadMethod get = new HeadMethod(url);
+        get.getParams().setCookiePolicy(CookiePolicy.IGNORE_COOKIES);
         int code = client.executeMethod(get);
         
         if (code >= 200 && code < 400) {

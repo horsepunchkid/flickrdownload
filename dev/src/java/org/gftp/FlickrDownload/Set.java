@@ -13,14 +13,16 @@ package org.gftp.FlickrDownload;
 
 import java.io.IOException;
 
+import org.apache.log4j.Logger;
+
 import org.jdom.Element;
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.Flickr;
-import com.aetrion.flickr.FlickrException;
-import com.aetrion.flickr.photos.Photo;
-import com.aetrion.flickr.photos.PhotoList;
-import com.aetrion.flickr.photosets.Photoset;
+import com.flickr4java.flickr.Flickr;
+import com.flickr4java.flickr.FlickrException;
+import com.flickr4java.flickr.photos.Photo;
+import com.flickr4java.flickr.photos.PhotoList;
+import com.flickr4java.flickr.photosets.Photoset;
 
 public class Set extends AbstractSet {
 	private Photoset set;
@@ -43,7 +45,8 @@ public class Set extends AbstractSet {
 			for (int i = 0; i < photos.size(); i++) {
 				retrievedPhotos++;
 				Photo photo = (Photo) photos.get(i);
-				processPhoto(new BasePhoto(photo), flickr, setXml);
+                Logger.getLogger(Set.class).info("Processing photo " + retrievedPhotos + " of " + totalPhotos + ": " + photo.getUrl());
+				processPhoto(photo, flickr, setXml);
 			}
 		} while (retrievedPhotos < totalPhotos);		
 	}

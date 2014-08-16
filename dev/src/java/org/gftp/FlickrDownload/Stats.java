@@ -32,7 +32,7 @@ import org.jdom.JDOMException;
 import org.jdom.input.SAXBuilder;
 import org.xml.sax.SAXException;
 
-import com.aetrion.flickr.FlickrException;
+import com.flickr4java.flickr.FlickrException;
 
 public class Stats {
 	private Sets sets;
@@ -124,7 +124,8 @@ public class Stats {
 
 			Logger.getLogger(Stats.class).info(String.format("Gathering statistics from file %s", setXmlFilename.getAbsolutePath()));
 
-			for (Element mediaElement : (List<Element>) root.getChildren("media")) {
+			for (Object mediaTemp : (List<?>) root.getChildren("media")) {
+                Element mediaElement = (Element) mediaTemp; // because getChildren returns List, not List<Element>
 				mediaIndexer.addToIndex(setId, mediaElement);
 
 				String type = mediaElement.getAttributeValue("type");					
@@ -136,7 +137,8 @@ public class Stats {
 				String mediaId = mediaElement.getChildText("id");
 				String mediumMd5sum = null;
 
-				for (Element imageElement : (List<Element>) mediaElement.getChildren("image")) {
+				for (Object imageTemp : (List<?>) mediaElement.getChildren("image")) {
+                    Element imageElement = (Element) imageTemp;
 					String sizeStr = imageElement.getAttributeValue("size");
 					if (sizeStr == null)
 						continue;
