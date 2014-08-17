@@ -227,15 +227,4 @@ public class FlickrDownload {
 
 		IOUtils.findFilesThatDoNotBelong(configuration.photosBaseDirectory, createdToplevelFiles, configuration.addExtensionToUnknownFiles);
 	}
-
-
-	protected static String join(Iterable parts, String join) {
-		String ret = "";
-		for (Object part : parts) {
-			if (!ret.equals(""))
-				ret += join;
-			ret += part;
-		}
-		return ret;
-	}
 }
