@@ -91,7 +91,7 @@
     <div class="set_thumb_div">
       <a>
         <xsl:attribute name="href"><xsl:value-of select="concat(id,'/index.html')"/></xsl:attribute>
-        <img class="set_thumb_photo" src="{thumbnailFile/@localFilename}"/>
+        <img class="set_thumb_photo" src="{thumbnailFile/@htmlUrl}"/>
       </a>
     </div>
 

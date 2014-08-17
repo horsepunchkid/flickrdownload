@@ -53,7 +53,7 @@
     <center>
       <a title="{media[$pos + 0]/title}">
         <xsl:attribute name="href"><xsl:value-of select="$filename"/></xsl:attribute>
-        <img class="thumbnail_photo" src="{media[$pos + 0]/image[@type='Medium']/@localFilename}"/>
+        <img class="thumbnail_photo" src="{media[$pos + 0]/image[@type='Medium']/@htmlUrl}"/>
       </a>
 
       <div class="photo_title"><xsl:value-of select="media[$pos + 0]/title"/></div>

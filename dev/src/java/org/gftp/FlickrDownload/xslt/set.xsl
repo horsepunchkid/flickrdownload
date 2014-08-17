@@ -36,7 +36,7 @@
             <td class="set_thumbnails_primary" width="45%" valign="top">
               <xsl:variable name="filename" select="concat(media[primary='1']/id,'.html')"/>
               <a title="{media[primary='1']/title}" href="{$filename}">
-                <img class="thumbnail_photo" src="{media[primary='1']/image[@type='Medium']/@localFilename}" width="100%"/>
+                <img class="thumbnail_photo" src="{media[primary='1']/image[@type='Medium']/@htmlUrl}" width="100%"/>
               </a>
     
               <xsl:if test="description != ''">
@@ -85,7 +85,7 @@
 
         <table class="photo_table">
           <td class="photo_side" valign="top">
-            <a href="{image[@type='Original']/@localFilename}"><img class="medium_photo" src="{media[$pos + 0]/image[@type='Medium']/@localFilename}"/></a>
+            <a href="{image[@type='Original']/@htmlUrl}"><img class="medium_photo" src="{media[$pos + 0]/image[@type='Medium']/@htmlUrl}"/></a>
             <div class="photo_title"><xsl:value-of select="media[$pos + 0]/title"/></div>
             <div class="photo_description"><xsl:value-of select="media[$pos + 0]/description"/></div>
           </td>
@@ -99,7 +99,7 @@
                 <xsl:if test="$pos > 1">
                   <a title="{media[$pos - 1]/title}">
                     <xsl:attribute name="href"><xsl:value-of select="concat(media[$pos - 1]/id,'.html')"/></xsl:attribute>
-                    <img class="thumb_photo" src="{media[$pos - 1]/image[@type='Small Square']/@localFilename}"/>
+                    <img class="thumb_photo" src="{media[$pos - 1]/image[@type='Small Square']/@htmlUrl}"/>
                   </a>
                 </xsl:if>
               </td>
@@ -107,7 +107,7 @@
                 <xsl:if test="media[$pos + 1]">
                   <a title="{media[$pos + 1]/title}">
                     <xsl:attribute name="href"><xsl:value-of select="concat(media[$pos + 1]/id,'.html')"/></xsl:attribute>
-                    <img class="thumb_photo" src="{media[$pos + 1]/image[@type='Small Square']/@localFilename}"/>
+                    <img class="thumb_photo" src="{media[$pos + 1]/image[@type='Small Square']/@htmlUrl}"/>
                   </a>
                 </xsl:if>
               </td>
@@ -144,9 +144,9 @@
 
             <div class="download_links">
               <div class="download_links_header">Download</div>
-              <xsl:for-each select="media[$pos + 0]/image[@localFilename != '']">
+              <xsl:for-each select="media[$pos + 0]/image[@htmlUrl != '']">
                 <div class="download_link">
-                  <a href="{@localFilename}"><xsl:value-of select="@type"/></a>
+                  <a href="{@htmlUrl}"><xsl:value-of select="@type"/></a>
                   <xsl:text> - </xsl:text>
                   <xsl:call-template name="pretty_file_size">
                     <xsl:with-param name="size" select="@size"/>
@@ -213,7 +213,7 @@
         <xsl:attribute name="class">video_thumbnail</xsl:attribute>
       </xsl:if>
 
-      <img class="thumbnail_photo" width="{$thumbnail_width}" height="{$thumbnail_height}" src="{media[$pos + 0]/image[@type='Small Square']/@localFilename}"/>
+      <img class="thumbnail_photo" width="{$thumbnail_width}" height="{$thumbnail_height}" src="{media[$pos + 0]/image[@type='Small Square']/@htmlUrl}"/>
 
       <xsl:if test="media[$pos + 0]/@type='video'">
         <span class="play_icon"><img src="../play_icon.png" width="{$thumbnail_width}" height="{$thumbnail_height}" alt="Play"/></span>

@@ -53,7 +53,7 @@ public class XmlUtils {
 			.addContent(createDateElement("flickrMemberSince", configuration.photosUser.getPhotosFirstDate()))
 			.addContent(createDateElement("mediaFirstTakenOn", configuration.photosUser.getPhotosFirstDateTaken()))
 			.addContent(createDateElement("photosSyncedOn", new Date()))
-			.addContent(createMediaElement("buddyIcon", configuration.buddyIconFilename, configuration.buddyIconFilename.getName(), configuration.photosUser.getSecureBuddyIconUrl()))
+			.addContent(createMediaElement("buddyIcon", configuration.buddyIconFilename, configuration.buddyIconFilename.getName(), configuration.photosUser.getSecureBuddyIconUrl(), configuration))
 			.addContent(new Element("authUser")
 				.setAttribute("id", configuration.auth.getUser().getId())
 				.setAttribute("username", configuration.auth.getUser().getUsername())
@@ -85,7 +85,7 @@ public class XmlUtils {
 			.setAttribute("pretty", date == null ? "" : prettyDateFormatter.format(date));
 	}
 
-	public static Element createMediaElement(String elementName, File localFilename, String displayLocalFilename, String remoteUrl) {
+	public static Element createMediaElement(String elementName, File localFilename, String displayLocalFilename, String remoteUrl, Configuration configuration) {
 		Element element = new Element(elementName)
 			.setAttribute("publicUrl", StringUtils.defaultString(remoteUrl));
 		
@@ -94,12 +94,16 @@ public class XmlUtils {
 				.setAttribute("size", String.valueOf(localFilename.length()))
 				.setAttribute("md5sum", localFilename.exists() ? IOUtils.md5Sum(localFilename) : "");
 
+            element.setAttribute("htmlUrl", displayLocalFilename);
+
 			if (localFilename.getName().endsWith(".jpg") || localFilename.getName().endsWith(".png")) {
 				Image image = new ImageIcon(localFilename.getAbsolutePath()).getImage();
 				element.setAttribute("width", String.valueOf(image.getWidth(null)))
 					.setAttribute("height", String.valueOf(image.getHeight(null)));
 			}
 		}
+
+        if(configuration.onlyData) element.setAttribute("htmlUrl", StringUtils.defaultString(remoteUrl));
 
 		return element;
 	}
@@ -108,7 +112,7 @@ public class XmlUtils {
 		if (!configuration.onlyData && remoteUrl != null && (!localFilename.exists() || forceDownload))
 			IOUtils.downloadUrl(remoteUrl, localFilename);
 
-		return createMediaElement(elementName, localFilename, displayLocalFilename, remoteUrl);
+		return createMediaElement(elementName, localFilename, displayLocalFilename, remoteUrl, configuration);
 	}
 
 	public static void performXsltTransformation(final Configuration configuration, String xsltStylesheet, File xmlFile, File outputFile, XsltParameter... parameters) throws IOException, TransformerException {

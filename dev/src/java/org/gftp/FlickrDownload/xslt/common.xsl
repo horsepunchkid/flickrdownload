@@ -17,7 +17,7 @@
   <xsl:param name="baseDir"/>
 
   <div class="header">
-    <img class="buddy_icon" width="{buddyIcon/@width}" height="{buddyIcon/@height}" src="{$baseDir}/{buddyIcon/@localFilename}"/>
+    <img class="buddy_icon" width="{buddyIcon/@width}" height="{buddyIcon/@height}" src="{buddyIcon/@htmlUrl}"/>
     <span class="header_links">
       <span class="header_title"><xsl:value-of select="$title"/></span>
       <span class="header_breadcrumbs">

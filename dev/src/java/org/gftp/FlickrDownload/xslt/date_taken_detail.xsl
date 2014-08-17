@@ -79,7 +79,7 @@
       <xsl:attribute name="class">video_thumbnail</xsl:attribute>
     </xsl:if>
 
-    <img class="thumbnail_photo" width="{$thumbnail_width}" height="{$thumbnail_height}" src="{sets/set[1]/@id}/{image[@type='Small Square']/@localFilename}"/>
+    <img class="thumbnail_photo" width="{$thumbnail_width}" height="{$thumbnail_height}" src="{sets/set[1]/@id}/{image[@type='Small Square']/@htmlUrl}"/>
 
     <xsl:if test="@type='video'">
       <span class="play_icon"><img src="../play_icon.png" width="{$thumbnail_width}" height="{$thumbnail_height}" alt="Play"/></span>

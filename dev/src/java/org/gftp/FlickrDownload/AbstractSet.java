@@ -164,9 +164,9 @@ public abstract class AbstractSet {
             	.addContent(new Element("title").setText(photo.getTitle()))
             	.addContent(new Element("description").setText(photo.getDescription()))
     			.addContent(new Element("publicUrl").setText(photo.getUrl()))
-    			.addContent(XmlUtils.createMediaElement("image", null, null, photo.getThumbnailUrl())
+    			.addContent(XmlUtils.createMediaElement("image", null, null, photo.getThumbnailUrl(), configuration)
     					.setAttribute("type", THUMBNAIL_PHOTO_DESCRIPTION))
-    			.addContent(XmlUtils.createMediaElement("image", null, null, photo.getSmallUrl())
+    			.addContent(XmlUtils.createMediaElement("image", null, null, photo.getSmallUrl(), configuration)
     					.setAttribute("type", SMALL_PHOTO_DESCRIPTION))
             	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
             			new File(getSetDirectory(), smallSquareBaseFilename), 

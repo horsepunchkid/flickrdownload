@@ -188,7 +188,7 @@
               </xsl:choose>
             </xsl:attribute>
 
-            <td><img src="{thumbnailFile/@localFilename}"/></td>
+            <td><img src="{thumbnailFile/@htmlUrl}"/></td>
             <td class="title_col"><a href="{id}/index.html"><xsl:value-of select="title"/></a></td>
             <td class="id_col" ><xsl:value-of select="id"/></td>
             <td class="num_photos_col"><xsl:value-of select="format-number(sum(media_stats/media/photo_counts/public), '###,###')"/></td>
