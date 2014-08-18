@@ -92,9 +92,9 @@ public class Sets {
     	}		
 	}
 
-	public void downloadAllPhotos(Collection<String> limitDownloadsToSets) throws Exception {
+	public void downloadAllPhotos() throws Exception {
 		for (AbstractSet set : this.sets) {
-			if (limitDownloadsToSets.size() > 0 && !limitDownloadsToSets.contains(set.getSetId()))
+			if (configuration.limitDownloadsToSets.size() > 0 && !configuration.limitDownloadsToSets.contains(set.getSetId()))
 				continue;
 
 			File setDir = set.getSetDirectory();

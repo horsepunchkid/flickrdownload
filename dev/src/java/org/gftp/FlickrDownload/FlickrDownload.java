@@ -222,7 +222,7 @@ public class FlickrDownload {
 		Sets sets = new Sets(configuration, flickr);
 
 		// The photos must be downloaded before the toplevel XML files are created
-		sets.downloadAllPhotos(values.limitDownloadsToSets);
+		sets.downloadAllPhotos();
 
 		createdToplevelFiles.addAll(createTopLevelFiles(configuration, collections, sets));
 
