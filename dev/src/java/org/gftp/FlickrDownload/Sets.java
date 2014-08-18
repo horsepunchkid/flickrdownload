@@ -67,6 +67,9 @@ public class Sets {
 	public Element createTopLevelXml() throws JDOMException, IOException {
 		Element allSets = new Element("sets");
     	for (AbstractSet set : this.sets) {
+			if (configuration.limitDownloadsToSets.size() > 0 && !configuration.limitDownloadsToSets.contains(set.getSetId()))
+				continue;
+
     		allSets.addContent(set.createToplevelXml());
     	}
     	return allSets;

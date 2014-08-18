@@ -211,6 +211,7 @@ public class FlickrDownload {
 		configuration.downloadExifData = values.downloadExifData;
 		configuration.partialDownloads = values.partial;
 		configuration.addExtensionToUnknownFiles = values.addExtensionToUnknownFiles;
+        configuration.limitDownloadsToSets = values.limitDownloadsToSets;
 
 		if (values.debug) {
 			Flickr.debugRequest = true;
