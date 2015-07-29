@@ -40,7 +40,7 @@ http://www.onstation.org/flickrdownload/.
 
 2) You will need to have Java installed on your computer. Type 'java -version'
    to see if it is installed. If not, Ubuntu GNU/Linux users can run
-   'apt-get install openjdk-6-jdk openjdk-6-jre' to get a copy installed.
+   'apt-get install openjdk-7-jdk openjdk-7-jre' to get a copy installed.
 
 3) You will need to have ant installed to compile the source code. Ubuntu
    GNU/Linux users can run 'apt-get install ant'.
