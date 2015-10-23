@@ -211,6 +211,7 @@ public class FlickrDownload {
 		configuration.downloadExifData = values.downloadExifData;
 		configuration.partialDownloads = values.partial;
 		configuration.addExtensionToUnknownFiles = values.addExtensionToUnknownFiles;
+        configuration.limitDownloadsToSets = values.limitDownloadsToSets;
 
 		if (values.debug) {
 			Flickr.debugRequest = true;
@@ -221,21 +222,10 @@ public class FlickrDownload {
 		Sets sets = new Sets(configuration, flickr);
 
 		// The photos must be downloaded before the toplevel XML files are created
-		sets.downloadAllPhotos(values.limitDownloadsToSets);
+		sets.downloadAllPhotos();
 
 		createdToplevelFiles.addAll(createTopLevelFiles(configuration, collections, sets));
 
 		IOUtils.findFilesThatDoNotBelong(configuration.photosBaseDirectory, createdToplevelFiles, configuration.addExtensionToUnknownFiles);
-	}
-
-
-	protected static String join(Iterable parts, String join) {
-		String ret = "";
-		for (Object part : parts) {
-			if (!ret.equals(""))
-				ret += join;
-			ret += part;
-		}
-		return ret;
 	}
 }

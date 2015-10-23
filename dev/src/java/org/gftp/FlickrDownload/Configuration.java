@@ -13,6 +13,7 @@ package org.gftp.FlickrDownload;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -35,6 +36,7 @@ public class Configuration {
 	public boolean partialDownloads = false;
 	public boolean onlyData = false;
 	public String addExtensionToUnknownFiles;
+	public List<String> limitDownloadsToSets;
 	public Auth auth;
 	
 	public Configuration(Flickr flickr, File photosBaseDirectory, File authDirectory, String userName) throws IOException, FlickrException, SAXException, ParserConfigurationException {
