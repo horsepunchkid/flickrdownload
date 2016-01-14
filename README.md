@@ -23,13 +23,13 @@ your local computer. It supports the following features:
 
 ## Screenshots
 
-Screenshots are available in the [screenshots/](screenshots) directory.
+Screenshots are available in the [screenshots](screenshots) directory.
 
 
 ## Binaries
 
-- A precompiled version of FlickrDownload is available in the [binaries/](binaries/)
-  directory for those wishing to not compile from source themselves.
+A precompiled version of FlickrDownload is available in the [binaries](binaries)
+directory for those wishing to not compile from source themselves.
 
 
 ## How to run
