@@ -2,11 +2,11 @@
 <project basedir="." default="build" name="FlickrDownload">
     <property environment="env"/>
     <property name="debuglevel" value="source,lines,vars"/>
-    <property name="target" value="1.8"/>
-    <property name="source" value="1.8"/>
+    <property name="target" value="1.7"/>
+    <property name="source" value="1.7"/>
 
     <property name="title" value="FlickrDownload"/>
-    <property name="version" value="0.7"/>
+    <property name="version" value="0.8"/>
     <property name="vendor" value="Brian Masney"/>
 
     <path id="FlickrDownload.classpath">
