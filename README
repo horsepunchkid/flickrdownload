@@ -67,7 +67,7 @@ software, and you are welcome to redistribute it under certain conditions;
 for details, see COPYING file.
 
 Option "--photosDir" is required
-usage: FlickrDownload  [--addExtensionToUnknownFiles VAL] [--authDir VAL] [--authUsername VAL] [--debug] [--downloadExifData] [--onlyData] [--limitToSet VAL ...] [--partial] --photosDir VAL [--photosUsername VAL]
+usage: FlickrDownload  [--addExtensionToUnknownFiles VAL] [--authDir VAL] [--authUsername VAL] [--debug] [--downloadExifData] [--onlyData] [--onlyOriginals] [--limitToSet VAL ...] [--partial] --photosDir VAL [--photosUsername VAL]
 
 I typically run it like this:
 

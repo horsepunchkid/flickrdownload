@@ -72,6 +72,9 @@ public class FlickrDownload {
 
 		@Option(name="--onlyData", required=false)
 		public boolean onlyData = false;
+
+		@Option(name="--onlyOriginals", required=false)
+		public boolean onlyOriginals = false;
 	}
 
 	private static File getToplevelXmlFilename(File photosBaseDirectory) {
@@ -201,6 +204,7 @@ public class FlickrDownload {
 		} 
 
         configuration.onlyData = values.onlyData;
+        configuration.onlyOriginals = values.onlyOriginals;
 
 		configuration.buddyIconFilename = new File(configuration.photosBaseDirectory, configuration.photosUser.getRealName() + ".jpg");
 		if (!configuration.onlyData && (configuration.alwaysDownloadBuddyIcon || !configuration.buddyIconFilename.exists()))

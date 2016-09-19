@@ -158,13 +158,15 @@ public abstract class AbstractSet {
     		this.expectedFiles.add(originalBaseFilename);
 
             GeoData geoData = photo.getGeoData();
-            setXml.addContent(new Element("media")
+            Element media = new Element("media")
             	.setAttribute("type", photo.getMedia())
             	.addContent(new Element("id").setText(photo.getId()))
             	.addContent(new Element("title").setText(photo.getTitle()))
             	.addContent(new Element("description").setText(photo.getDescription()))
-    			.addContent(new Element("publicUrl").setText(photo.getUrl()))
-    			.addContent(XmlUtils.createMediaElement("image", null, null, photo.getThumbnailUrl())
+    			.addContent(new Element("publicUrl").setText(photo.getUrl()));
+
+            if(!configuration.onlyOriginals) {
+    			media.addContent(XmlUtils.createMediaElement("image", null, null, photo.getThumbnailUrl())
     					.setAttribute("type", THUMBNAIL_PHOTO_DESCRIPTION))
     			.addContent(XmlUtils.createMediaElement("image", null, null, photo.getSmallUrl())
     					.setAttribute("type", SMALL_PHOTO_DESCRIPTION))
@@ -188,15 +190,17 @@ public abstract class AbstractSet {
             			photo.getLargeUrl(),
             			false,
                         configuration)
-            				.setAttribute("type", LARGE_PHOTO_DESCRIPTION))
-            	.addContent(XmlUtils.downloadMediaAndCreateElement("image",
-            			new File(getSetDirectory(), originalBaseFilename), 
-            			originalBaseFilename,
-            			originalUrl,
-            			false,
-                        configuration)
-            				.setAttribute("type", ORIGINAL_MEDIA_DESCRIPTION)
-            				.setAttribute("format", photo.getOriginalFormat()))
+            				.setAttribute("type", LARGE_PHOTO_DESCRIPTION));
+            }
+
+            media.addContent(XmlUtils.downloadMediaAndCreateElement("image",
+                    new File(getSetDirectory(), originalBaseFilename), 
+                    originalBaseFilename,
+                    originalUrl,
+                    false,
+                    configuration)
+                        .setAttribute("type", ORIGINAL_MEDIA_DESCRIPTION)
+                        .setAttribute("format", photo.getOriginalFormat()))
            		.addContent(new Element("dates")               		
            			.addContent(XmlUtils.createDateElement("taken", photo.getDateTaken())
            				.setAttribute("granularity", photo.getTakenGranularity()))
@@ -216,8 +220,9 @@ public abstract class AbstractSet {
             		.setAttribute("longitude", geoData == null ? "" : String.valueOf(geoData.getLongitude())))
               	.addContent(tagEle)
                	.addContent(notesEle)
-               	.addContent(exifTagsEle)
-            );
+               	.addContent(exifTagsEle);
+
+            setXml.addContent(media);
 	}
 
 	public Element createSetlevelXml(Flickr flickr) throws IOException, SAXException, FlickrException {

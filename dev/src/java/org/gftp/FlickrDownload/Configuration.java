@@ -35,6 +35,7 @@ public class Configuration {
 	public boolean alwaysDownloadBuddyIcon = false;
 	public boolean partialDownloads = false;
 	public boolean onlyData = false;
+	public boolean onlyOriginals = false;
 	public String addExtensionToUnknownFiles;
 	public List<String> limitDownloadsToSets;
 	public Auth auth;
