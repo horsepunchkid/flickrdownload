@@ -32,6 +32,10 @@ public class PhotosNotInASet extends AbstractSet {
 	public PhotosNotInASet(Configuration configuration, Flickr flickr) throws IOException, SAXException, FlickrException {
 		super(configuration);
 
+        if(configuration.limitDownloadsToSets.size() > 0) {
+            return;
+        }
+
 		Logger.getLogger(getClass()).info("Downloading list of photos that are not in a set");
 
 		int pageNum = 1;
