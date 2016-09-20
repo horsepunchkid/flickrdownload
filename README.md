@@ -49,7 +49,7 @@ several other files that end in jar. Type
     for details, see COPYING file.
     
     Option "--photosDir" is required
-    usage: FlickrDownload  [--addExtensionToUnknownFiles VAL] [--authDir VAL] [--authUsername VAL] [--debug] [--downloadExifData] [--onlyData] [--limitToSet VAL ...] [--partial] --photosDir VAL [--photosUsername VAL]
+    usage: FlickrDownload  [--addExtensionToUnknownFiles VAL] [--authDir VAL] [--authUsername VAL] [--debug] [--downloadExifData] [--onlyData] [--onlyOriginals] [--limitToSet VAL ...] [--partial] --photosDir VAL [--photosUsername VAL]
     
 I typically run it like this:
 
