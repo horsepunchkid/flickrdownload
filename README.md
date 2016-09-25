@@ -26,6 +26,13 @@ your local computer. It supports the following features:
 Screenshots are available in the [screenshots](screenshots) directory.
 
 
+## Building
+
+FlickrDownload can be built with Apache Ant. To build, simply run `ant`
+with no arguments and look for the resulting file
+`build/FlickrDownload.jar`.
+
+
 ## Binaries
 
 A precompiled version of FlickrDownload is available in the [binaries](binaries)
@@ -38,19 +45,19 @@ In the build directory, you will see a FlickrDownload.jar file, along with
 several other files that end in jar. Type
 `java -jar FlickrDownload.jar` and you should see something like this:
 
-    FlickrDownload 0.6 - Copyright(C) 2007,2010 Brian Masney <masneyb@onstation.org>.
+    FlickrDownload 0.9 - Copyright(C) 2007,2010 Brian Masney <masneyb@onstation.org>.
     If you have any questions, comments, or suggestions about this program, please
     feel free to email them to me. You can always find out the latest news about
     FlickrDownload from my website at http://www.onstation.org/flickrdownload/.
-    
+
     FlickrDownload is distributed under the terms of the GPLv3 and comes with
     ABSOLUTELY NO WARRANTY; for details, see the COPYING file. This is free
     software, and you are welcome to redistribute it under certain conditions;
     for details, see COPYING file.
-    
+
     Option "--photosDir" is required
     usage: FlickrDownload  [--addExtensionToUnknownFiles VAL] [--authDir VAL] [--authUsername VAL] [--debug] [--downloadExifData] [--onlyData] [--onlyOriginals] [--limitToSet VAL ...] [--partial] --photosDir VAL [--photosUsername VAL]
-    
+
 I typically run it like this:
 
 `java -Xmx2048m -jar /home/masneyb/src/flickrdownload/build/FlickrDownload.jar --partial --photosDir /path/to/flickr/backup --addExtensionToUnknownFiles todelete --downloadExifData`
