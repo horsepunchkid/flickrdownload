@@ -91,9 +91,11 @@ public class FlickrDownload {
 		Element toplevel = new Element("flickr")
 			.addContent(XmlUtils.createApplicationXml())
 			.addContent(XmlUtils.createUserXml(configuration))
-			.addContent(collections.createTopLevelXml())
-			.addContent(sets.createTopLevelXml())
-			.addContent(new Stats(sets).createStatsXml(indexer));
+			.addContent(collections.createTopLevelXml());
+        Logger.getLogger(FlickrDownload.class).info("Building set list...");
+        toplevel.addContent(sets.createTopLevelXml());
+        Logger.getLogger(FlickrDownload.class).info("Compiling global statistics...");
+        toplevel.addContent(new Stats(sets).createStatsXml(indexer));
 
 		createdFiles.addAll(indexer.writeIndex());
 
@@ -228,10 +230,12 @@ public class FlickrDownload {
 		// The photos must be downloaded before the toplevel XML files are created
 		sets.downloadAllPhotos();
 
+		Logger.getLogger(FlickrDownload.class).info("Set downloads complete; beginning processing...");
+
 		createdToplevelFiles.addAll(createTopLevelFiles(configuration, collections, sets));
 
 		IOUtils.findFilesThatDoNotBelong(configuration.photosBaseDirectory, createdToplevelFiles, configuration.addExtensionToUnknownFiles);
 
-		Logger.getLogger(FlickrDownload.class).info("Download complete.");
+		Logger.getLogger(FlickrDownload.class).info("Download and processing complete.");
 	}
 }
