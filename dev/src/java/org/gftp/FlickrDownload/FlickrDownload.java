@@ -231,5 +231,7 @@ public class FlickrDownload {
 		createdToplevelFiles.addAll(createTopLevelFiles(configuration, collections, sets));
 
 		IOUtils.findFilesThatDoNotBelong(configuration.photosBaseDirectory, createdToplevelFiles, configuration.addExtensionToUnknownFiles);
+
+		Logger.getLogger(FlickrDownload.class).info("Download complete.");
 	}
 }
