@@ -89,5 +89,12 @@
         <delete dir="build/bin"/>
     </target>
 
+    <target name="dist" depends="build"
+        description="Build distributable ZIP file for FlickrDownload">
+        <zip destfile="binaries/FlickrDownload-${version}.zip">
+            <fileset dir="build"/>
+        </zip>
+    </target>
+
     <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects"/>
 </project>
